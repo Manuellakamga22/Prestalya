@@ -1,0 +1,82 @@
+/* ServiceCard */
+.service-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+}
+.service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+
+.service-card-icon { font-size: 2.4rem; line-height: 1; }
+.service-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--blue-deep); }
+.service-card p { font-size: 0.9rem; color: var(--gray-text); line-height: 1.6; flex: 1; }
+.service-card .btn-primary { padding: 10px 18px; font-size: 0.88rem; align-self: flex-start; margin-top: 4px; }
+
+/* ProviderCard */
+.provider-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.provider-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+.provider-card-header { display: flex; gap: 14px; align-items: flex-start; }
+.provider-card-info { flex: 1; }
+.provider-card-info h3 { font-size: 1.05rem; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
+
+.provider-service-badge {
+  display: inline-block;
+  background: var(--blue-light);
+  color: var(--blue-mid);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+}
+
+.provider-card-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.88rem; color: var(--gray-text); }
+.provider-meta-item { display: flex; align-items: center; gap: 4px; }
+
+.provider-card-rating { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; margin-top: 4px; }
+.provider-card-rating strong { font-weight: 700; color: var(--text-dark); }
+.provider-card-rating span { color: var(--gray-text); font-size: 0.85rem; }
+
+.provider-card-footer { display: flex; gap: 8px; margin-top: 4px; }
+.provider-card-footer .btn-secondary { flex: 1; padding: 10px 12px; font-size: 0.88rem; text-align: center; }
+.provider-card-footer .btn-primary { flex: 1; padding: 10px 12px; font-size: 0.88rem; text-align: center; }
+
+/* TestimonialCard */
+.testimonial-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.testimonial-text { color: var(--text-mid); font-size: 0.95rem; line-height: 1.7; font-style: italic; flex: 1; }
+
+.testimonial-footer { display: flex; align-items: center; gap: 12px; }
+.testimonial-info strong { display: block; font-weight: 700; font-size: 0.95rem; color: var(--text-dark); }
+.testimonial-info span { font-size: 0.85rem; color: var(--gray-text); }
+
+.quote-mark {
+  font-size: 2.5rem;
+  color: var(--blue-light);
+  line-height: 1;
+  font-family: Georgia, serif;
+  font-weight: 700;
+}
