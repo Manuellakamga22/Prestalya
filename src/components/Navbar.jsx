@@ -19,8 +19,8 @@ export default function Navbar() {
       <div className="container">
         <div className="navbar-inner">
           <Link to="/" className="navbar-logo">
-            <div className="logo-icon">P</div>
-            <span>Prestal<span className="logo-accent">ya</span></span>
+            <div className="logo-icon">🏠</div>
+            <span>Prestalya</span>
           </Link>
 
           <ul className="navbar-links">
@@ -34,13 +34,11 @@ export default function Navbar() {
           </ul>
 
           <div className="navbar-cta">
-            <Link to="/reservation" className="btn-primary">Réserver</Link>
+            <Link to="/reservation" className="btn-primary">Se connecter</Link>
           </div>
 
           <button className="navbar-toggle" onClick={() => setOpen(!open)} aria-label="Menu">
-            <span></span>
-            <span></span>
-            <span></span>
+            <span /><span /><span />
           </button>
         </div>
 
@@ -51,7 +49,7 @@ export default function Navbar() {
             </NavLink>
           ))}
           <Link to="/reservation" className="btn-primary" onClick={() => setOpen(false)}>
-            Réserver une prestation
+            Se connecter
           </Link>
         </div>
       </div>

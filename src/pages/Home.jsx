@@ -1,64 +1,75 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ServiceCard from "../components/ServiceCard";
 import TestimonialCard from "../components/TestimonialCard";
 import { services, testimonials } from "../data";
+import { serviceIcons } from "../components/Icons";
 import "../styles/Home.css";
 
 export default function Home() {
+  const navigate = useNavigate();
+
+  const stripLabels = ["Ménage", "Nett. canapé", "Désinfection", "Repassage", "Babysitting", "Informatique", "Coiffure", "Dépannages"];
+
   return (
     <main>
-      {/* Hero */}
+      {/* ─── Hero ─── */}
       <section className="hero">
         <div className="container">
-          <div className="hero-content">
-            <div className="hero-badge">✨ Plateforme de confiance en France</div>
-            <h1>
-              Trouvez un prestataire <span>fiable</span> près de chez vous
-            </h1>
-            <p className="hero-subtitle">
-              Réservez facilement des services à domicile : ménage, nettoyage, désinfection, aide informatique, babysitting et plus encore.
-            </p>
-            <div className="hero-actions">
-              <Link to="/reservation" className="btn-primary">Réserver une prestation</Link>
-              <Link to="/devenir-prestataire" className="btn-secondary">Devenir prestataire</Link>
+          <div className="hero-layout">
+            <div>
+              <div className="hero-badge">✨ Plateforme de confiance en France</div>
+              <h1>Trouvez un prestataire fiable près de chez vous</h1>
+              <p className="hero-subtitle">
+                Réservez facilement des services à domicile : ménage, nettoyage, désinfection, aide informatique, babysitting et plus encore.
+              </p>
+              <div className="hero-actions">
+                <Link to="/reservation" className="btn-primary">Réserver une prestation</Link>
+                <Link to="/devenir-prestataire" className="btn-green">Devenir prestataire</Link>
+              </div>
             </div>
-            <div className="hero-stats">
-              <div className="hero-stat">
-                <strong>500+</strong>
-                <span>Prestataires vérifiés</span>
-              </div>
-              <div className="hero-stat">
-                <strong>2 000+</strong>
-                <span>Réservations effectuées</span>
-              </div>
-              <div className="hero-stat">
-                <strong>4.8/5</strong>
-                <span>Note moyenne</span>
+
+            <div className="hero-image-wrap">
+              <img
+                src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80"
+                alt="Prestataire professionnelle à domicile"
+                loading="eager"
+              />
+              <div className="hero-image-badge">
+                <div className="badge-avatars">
+                  {[{ bg: "#4A90D9" }, { bg: "#2ECC71" }, { bg: "#E91E8C" }].map((a, i) => (
+                    <div key={i} className="mini-av" style={{ background: a.bg }}>✓</div>
+                  ))}
+                </div>
+                <div className="badge-text">
+                  <strong>500+ prestataires vérifiés</strong>
+                  <span>Disponibles près de chez vous</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Services populaires */}
-      <section className="home-services">
+      {/* ─── Strip services ─── */}
+      <section className="service-strip">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">Nos services populaires</h2>
-            <p className="section-subtitle">Des prestations pour tous vos besoins, assurées par des professionnels qualifiés.</p>
-          </div>
-          <div className="services-grid">
-            {services.slice(0, 4).map((s) => (
-              <ServiceCard key={s.id} service={s} />
-            ))}
-          </div>
-          <div style={{ textAlign: "center", marginTop: 36 }}>
-            <Link to="/services" className="btn-secondary">Voir tous les services</Link>
+          <div className="strip-grid">
+            {services.map((s, i) => {
+              const Icon = serviceIcons[s.slug];
+              return (
+                <div key={s.id} className="strip-item" onClick={() => navigate("/prestataires")}>
+                  <div className="strip-icon">
+                    {Icon ? <Icon size={24} /> : <span>🔧</span>}
+                  </div>
+                  <span>{stripLabels[i]}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Comment ça marche */}
+      {/* ─── Comment ça marche ─── */}
       <section className="how-it-works">
         <div className="container">
           <div className="section-header">
@@ -67,17 +78,17 @@ export default function Home() {
           </div>
           <div className="steps-grid">
             <div className="step-card">
-              <div className="step-number">1</div>
+              <div className="step-num">1</div>
               <h3>Choisissez un service</h3>
               <p>Parcourez notre catalogue de services et sélectionnez celui dont vous avez besoin.</p>
             </div>
             <div className="step-card">
-              <div className="step-number">2</div>
+              <div className="step-num">2</div>
               <h3>Sélectionnez un prestataire</h3>
-              <p>Consultez les profils, les avis et les tarifs pour choisir le prestataire idéal.</p>
+              <p>Consultez les profils, les avis et les tarifs puis choisissez le prestataire idéal.</p>
             </div>
             <div className="step-card">
-              <div className="step-number">3</div>
+              <div className="step-num">3</div>
               <h3>Réservez votre créneau</h3>
               <p>Choisissez une date et un horaire qui vous convient. Confirmation immédiate.</p>
             </div>
@@ -85,7 +96,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Avantages */}
+      {/* ─── Avantages ─── */}
       <section className="advantages">
         <div className="container">
           <div className="section-header">
@@ -93,39 +104,39 @@ export default function Home() {
             <p className="section-subtitle">Une plateforme conçue pour votre tranquillité d'esprit.</p>
           </div>
           <div className="advantages-grid">
-            <div className="advantage-card">
-              <div className="advantage-icon">✅</div>
-              <div>
-                <h3>Prestataires vérifiés</h3>
-                <p>Tous nos prestataires sont contrôlés, évalués et validés avant d'accéder à la plateforme.</p>
+            {[
+              { icon: "✅", title: "Prestataires vérifiés", desc: "Tous nos professionnels sont contrôlés, évalués et validés avant d'accéder à la plateforme." },
+              { icon: "⚡", title: "Réservation simple", desc: "Réservez en quelques clics, sans appel téléphonique, sans paperasse inutile." },
+              { icon: "🔒", title: "Paiement sécurisé", desc: "Votre paiement est libéré uniquement après validation de votre prestation." },
+              { icon: "⭐", title: "Avis clients", desc: "Consultez les avis vérifiés pour faire le meilleur choix (bientôt disponible)." },
+            ].map((a, i) => (
+              <div key={i} className="advantage-card">
+                <div className="adv-icon">{a.icon}</div>
+                <h3>{a.title}</h3>
+                <p>{a.desc}</p>
               </div>
-            </div>
-            <div className="advantage-card">
-              <div className="advantage-icon">🚀</div>
-              <div>
-                <h3>Réservation simple</h3>
-                <p>Réservez en quelques clics, sans appel téléphonique, sans paperasse inutile.</p>
-              </div>
-            </div>
-            <div className="advantage-card">
-              <div className="advantage-icon">🔒</div>
-              <div>
-                <h3>Paiement sécurisé</h3>
-                <p>Votre paiement est sécurisé et n'est libéré qu'après validation de votre prestation.</p>
-              </div>
-            </div>
-            <div className="advantage-card">
-              <div className="advantage-icon">⭐</div>
-              <div>
-                <h3>Avis clients vérifiés</h3>
-                <p>Les avis sont publiés uniquement par des clients ayant réellement utilisé le service.</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Témoignages */}
+      {/* ─── Services ─── */}
+      <section style={{ padding: "88px 0", background: "var(--gray-50)" }}>
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">Nos services</h2>
+            <p className="section-subtitle">Des prestations pour tous vos besoins, assurées par des professionnels qualifiés.</p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 22 }}>
+            {services.slice(0, 4).map((s) => <ServiceCard key={s.id} service={s} />)}
+          </div>
+          <div style={{ textAlign: "center", marginTop: 32 }}>
+            <Link to="/services" className="btn-outline">Voir tous les services →</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Témoignages ─── */}
       <section className="testimonials-section">
         <div className="container">
           <div className="section-header">
@@ -133,21 +144,23 @@ export default function Home() {
             <p className="section-subtitle">Des milliers de clients satisfaits font confiance à Prestalya.</p>
           </div>
           <div className="testimonials-grid">
-            {testimonials.map((t, i) => (
-              <TestimonialCard key={i} testimonial={t} />
-            ))}
+            {testimonials.map((t, i) => <TestimonialCard key={i} testimonial={t} />)}
           </div>
         </div>
       </section>
 
-      {/* CTA final */}
+      {/* ─── CTA ─── */}
       <section className="cta-section">
         <div className="container">
-          <h2>Prêt à déléguer vos tâches ?</h2>
-          <p>Rejoignez des milliers de clients qui font confiance à Prestalya pour leurs services à domicile.</p>
-          <div className="cta-buttons">
-            <Link to="/reservation" className="btn-primary">Réserver maintenant</Link>
-            <Link to="/prestataires" className="btn-secondary">Voir les prestataires</Link>
+          <div className="cta-inner">
+            <div className="cta-text">
+              <h2>Prêt à réserver votre prestation ?</h2>
+              <p>Des professionnels fiables, disponibles près de chez vous.</p>
+            </div>
+            <div className="cta-actions">
+              <Link to="/reservation" className="btn-white">Réserver maintenant</Link>
+              <Link to="/prestataires" className="btn-outline-white">Voir les prestataires</Link>
+            </div>
           </div>
         </div>
       </section>

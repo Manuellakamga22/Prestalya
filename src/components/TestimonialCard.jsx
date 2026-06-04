@@ -3,19 +3,16 @@ import "../styles/cards.css";
 export default function TestimonialCard({ testimonial }) {
   return (
     <div className="testimonial-card">
-      <div className="quote-mark">"</div>
-      <p className="testimonial-text">{testimonial.text}</p>
+      <div className="testimonial-stars stars">{"★".repeat(testimonial.note)}</div>
+      <p className="testimonial-quote">"{testimonial.text}"</p>
       <div className="testimonial-footer">
-        <div className="avatar" style={{ background: testimonial.color, width: 44, height: 44, fontSize: "0.9rem" }}>
+        <div className="testimonial-avatar" style={{ background: testimonial.color }}>
           {testimonial.avatar}
         </div>
-        <div className="testimonial-info">
-          <strong>{testimonial.name}</strong>
-          <span>📍 {testimonial.city}</span>
+        <div>
+          <div className="testimonial-name">{testimonial.name}</div>
+          <div className="testimonial-city">📍 {testimonial.city}</div>
         </div>
-        <span className="stars" style={{ marginLeft: "auto" }}>
-          {"★".repeat(testimonial.note)}
-        </span>
       </div>
     </div>
   );
