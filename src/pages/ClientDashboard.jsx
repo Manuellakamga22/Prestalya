@@ -89,6 +89,23 @@ export default function ClientDashboard() {
     finally { setBookingActionId(null); }
   }
 
+  // Paiement Stripe (avec déduction automatique du crédit de parrainage disponible)
+  async function payerEtConfirmer(id) {
+    setBookingActionId(id);
+    try {
+      const res = await api.post(`/payments/${id}/payer`, {});
+      if (res.paidWithCredit) {
+        // Entièrement couvert par le crédit parrainage : pas de redirection Stripe nécessaire
+        const b = await api.get("/bookings/me").catch(() => []);
+        setBookings(b);
+        setBookingActionId(null);
+        alert("Réservation payée avec votre crédit de parrainage !");
+        return;
+      }
+      window.location.href = res.url;
+    } catch (e) { alert(e.message); setBookingActionId(null); }
+  }
+
   async function submitAvis(e) {
     e.preventDefault();
     setAvisLoad(true);
@@ -637,7 +654,12 @@ export default function ClientDashboard() {
                             <button className="dash-btn-cancel" disabled={bookingActionId === b.id} onClick={() => repondreProposition(b.id, false)}>✕ Refuser</button>
                           </>
                         )}
-                        {b.status === "accepte" && (
+                        {b.status === "accepte" && parseFloat(b.montant_ht) > 0 && (
+                          <button className="dash-btn-action green" disabled={bookingActionId === b.id} onClick={() => payerEtConfirmer(b.id)}>
+                            {bookingActionId === b.id ? "…" : `💳 Payer ${parseFloat(b.montant_ht).toFixed(2)}€ et confirmer`}
+                          </button>
+                        )}
+                        {b.status === "accepte" && !(parseFloat(b.montant_ht) > 0) && (
                           <button className="dash-btn-action green" disabled={bookingActionId === b.id} onClick={() => confirmerPrestation(b.id)}>✅ Confirmer la prestation</button>
                         )}
                         {b.status === "termine" && !avisSent[b.id] && (

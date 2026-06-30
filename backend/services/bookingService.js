@@ -22,9 +22,10 @@ const create = async (client_id, data) => {
     }
   }
 
+  // Le montant est calculé côté serveur à partir du tarif du prestataire (jamais depuis le client)
   let commissionData = {};
-  if (data.provider_id && data.montant_ht) {
-    const calc = await commissionService.calculerPourBooking(data.provider_id, parseFloat(data.montant_ht));
+  if (provider && provider.price) {
+    const calc = await commissionService.calculerPourBooking(provider.id, parseFloat(provider.price));
     commissionData = {
       montant_ht:         calc.montantHT,
       taux_commission:    calc.taux,
@@ -152,9 +153,19 @@ const acceptOpenBooking = async (booking_id, provider_user_id) => {
     if (taken) throw Object.assign(new Error("Ce créneau n'est plus disponible dans votre agenda."), { status: 409 });
   }
 
-  const updated = await bookingRepo.setProvider(booking_id, provider.id, "accepte");
+  let updated = await bookingRepo.setProvider(booking_id, provider.id, "accepte");
   if (booking.slot && booking.date) {
     await dispoRepo.setSlotStatus(provider.id, booking.date, booking.slot, "reserve", booking_id);
+  }
+
+  // Calcul du montant maintenant que le prestataire (et son tarif) est connu
+  if (provider.price) {
+    const calc = await commissionService.calculerPourBooking(provider.id, parseFloat(provider.price));
+    await db.query(
+      "UPDATE bookings SET montant_ht = ?, taux_commission = ?, montant_commission = ?, montant_net = ? WHERE id = ?",
+      [calc.montantHT, calc.taux, calc.montantCommission, calc.montantNet, booking_id]
+    );
+    updated = await bookingRepo.findById(booking_id);
   }
 
   notifService.push(booking.client_id, {
@@ -288,11 +299,14 @@ const respondProposal = async (booking_id, client_id, accept) => {
 };
 
 // Client confirme définitivement la prestation après acceptation du prestataire
+// (uniquement quand aucun montant n'est dû — sinon le paiement Stripe déclenche la confirmation)
 const confirmBooking = async (booking_id, client_id) => {
   const booking = await bookingRepo.findById(booking_id);
   if (!booking) throw Object.assign(new Error("Réservation introuvable."), { status: 404 });
   if (booking.client_id !== client_id) throw Object.assign(new Error("Non autorisé."), { status: 403 });
   if (booking.status !== "accepte") throw Object.assign(new Error("Cette réservation ne peut pas encore être confirmée."), { status: 409 });
+  if (booking.montant_ht && parseFloat(booking.montant_ht) > 0)
+    throw Object.assign(new Error("Cette réservation nécessite un paiement. Utilisez le bouton de paiement."), { status: 409 });
 
   const updated = await bookingRepo.updateStatus(booking_id, "confirme");
 
@@ -308,6 +322,75 @@ const confirmBooking = async (booking_id, client_id) => {
   return updated;
 };
 
+// Crée une session de paiement Stripe pour la prestation acceptée
+const payerBooking = async (booking_id, client_id) => {
+  const paymentService = require("./paymentService");
+  const parrainageRepo = require("../repositories/parrainageRepository");
+  const booking = await bookingRepo.findById(booking_id);
+  if (!booking) throw Object.assign(new Error("Réservation introuvable."), { status: 404 });
+  if (booking.client_id !== client_id) throw Object.assign(new Error("Non autorisé."), { status: 403 });
+  if (booking.status !== "accepte") throw Object.assign(new Error("Cette réservation ne peut pas encore être payée."), { status: 409 });
+  if (!booking.montant_ht || parseFloat(booking.montant_ht) <= 0)
+    throw Object.assign(new Error("Aucun montant à payer pour cette réservation."), { status: 409 });
+  if (booking.payment_status === "paye") throw Object.assign(new Error("Cette réservation est déjà payée."), { status: 409 });
+
+  // Déduction du crédit de parrainage disponible (par blocs de 10€ non utilisés)
+  const montant = parseFloat(booking.montant_ht);
+  const unusedRewards = await parrainageRepo.getUnusedRewards(client_id);
+  let creditApplied = 0;
+  const rewardIdsConsumed = [];
+  for (const r of unusedRewards) {
+    if (creditApplied + parseFloat(r.credit) > montant) break;
+    creditApplied += parseFloat(r.credit);
+    rewardIdsConsumed.push(r.id);
+  }
+  const montantAPayer = parseFloat((montant - creditApplied).toFixed(2));
+
+  // Le crédit couvre tout le montant : pas besoin de passer par Stripe
+  if (montantAPayer <= 0) {
+    await parrainageRepo.markRewardsUsed(rewardIdsConsumed);
+    const updated = await bookingRepo.markPaid(booking_id, null);
+    await notifyBookingPaid(updated);
+    return { url: null, paidWithCredit: true };
+  }
+
+  const session = await paymentService.createCheckoutSession(booking, montantAPayer, rewardIdsConsumed);
+  await bookingRepo.setStripeSession(booking_id, session.id);
+
+  return { url: session.url };
+};
+
+const notifyBookingPaid = async (booking) => {
+  if (booking.provider_id) {
+    const provider = await providerRepo.findById(booking.provider_id);
+    if (provider) {
+      notifService.push(provider.user_id, {
+        type: "booking_confirmed", title: "Prestation payée et confirmée",
+        body: `Le client a payé et confirmé la prestation "${booking.service}".`,
+        link: "/prestataire",
+      }).catch(() => {});
+    }
+  }
+  await notifyClientEmail(booking, "confirme");
+};
+
+// Appelé par le webhook Stripe quand le paiement est confirmé
+const handlePaymentSuccess = async (session) => {
+  const parrainageRepo = require("../repositories/parrainageRepository");
+  const booking = await bookingRepo.findByStripeSessionId(session.id);
+  if (!booking) return null;
+  if (booking.payment_status === "paye") return booking; // idempotence
+
+  const updated = await bookingRepo.markPaid(booking.id, session.payment_intent);
+
+  const rewardIds = (session.metadata?.reward_ids || "").split(",").filter(Boolean);
+  if (rewardIds.length) await parrainageRepo.markRewardsUsed(rewardIds).catch(() => {});
+
+  await notifyBookingPaid(updated);
+
+  return updated;
+};
+
 const updateStatus = async (booking_id, user_id, role, status) => {
   const booking = await bookingRepo.findById(booking_id);
   if (!booking) throw Object.assign(new Error("Réservation introuvable."), { status: 404 });
@@ -319,11 +402,22 @@ const updateStatus = async (booking_id, user_id, role, status) => {
   if (!allowed.includes(status))
     throw Object.assign(new Error("Statut non autorisé."), { status: 403 });
 
-  const updated = await bookingRepo.updateStatus(booking_id, status);
+  // Une prestation ne peut être marquée "terminée" qu'après confirmation (et paiement si dû)
+  if (status === "termine" && booking.status !== "confirme")
+    throw Object.assign(new Error("Cette réservation doit d'abord être confirmée (et payée si nécessaire)."), { status: 409 });
+
+  let updated = await bookingRepo.updateStatus(booking_id, status);
 
   if (["annule"].includes(status) && booking.provider_id && booking.slot && booking.date) {
     const provider = await providerRepo.findById(booking.provider_id);
     if (provider) await dispoRepo.freeSlot(provider.id, booking.date, booking.slot);
+  }
+
+  // Remboursement automatique si la prestation annulée avait été payée
+  if (status === "annule" && booking.payment_status === "paye" && booking.stripe_payment_intent_id) {
+    const paymentService = require("./paymentService");
+    await paymentService.refundPayment(booking.stripe_payment_intent_id).catch(() => {});
+    updated = await bookingRepo.markRefunded(booking_id);
   }
 
   const notifMap = {
@@ -347,4 +441,5 @@ const updateStatus = async (booking_id, user_id, role, status) => {
 module.exports = {
   create, myBookings, updateStatus, getOpenBookings, acceptOpenBooking,
   acceptBooking, refuseBooking, proposeAlternative, respondProposal, confirmBooking,
+  payerBooking, handlePaymentSuccess,
 };

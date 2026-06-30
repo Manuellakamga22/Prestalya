@@ -27,8 +27,9 @@ router.post("/appliquer", auth, async (req, res, next) => {
     const { code } = req.body;
     if (!code) return res.status(400).json({ message: "code requis." });
     const result = await repo.applyReferral(req.user.id, code);
-    if (!result) return res.status(400).json({ message: "Code invalide ou déjà utilisé." });
-    res.json({ message: "Code appliqué ! Vous et votre parrain recevez 10€ de crédit.", credit: result.credit });
+    if (!result) return res.status(400).json({ message: "Code invalide." });
+    if (result.alreadyUsed) return res.status(409).json({ message: "Vous avez déjà utilisé un code de parrainage." });
+    res.json({ message: "Code appliqué ! Votre parrain reçoit 10€ de crédit.", credit: result.credit });
   } catch (err) { next(err); }
 });
 

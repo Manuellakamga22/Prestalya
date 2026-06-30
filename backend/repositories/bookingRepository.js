@@ -72,4 +72,30 @@ const acceptProposal = async (id) => {
   return findById(id);
 };
 
-module.exports = { create, findByClient, findByProvider, findById, updateStatus, setProvider, setProposal, acceptProposal };
+const setStripeSession = async (id, stripe_session_id) => {
+  await db.query("UPDATE bookings SET stripe_session_id = ? WHERE id = ?", [stripe_session_id, id]);
+  return findById(id);
+};
+
+const markPaid = async (id, stripe_payment_intent_id) => {
+  await db.query(
+    "UPDATE bookings SET status = 'confirme', payment_status = 'paye', stripe_payment_intent_id = ? WHERE id = ?",
+    [stripe_payment_intent_id, id]
+  );
+  return findById(id);
+};
+
+const markRefunded = async (id) => {
+  await db.query("UPDATE bookings SET payment_status = 'rembourse' WHERE id = ?", [id]);
+  return findById(id);
+};
+
+const findByStripeSessionId = async (stripe_session_id) => {
+  const [rows] = await db.query("SELECT * FROM bookings WHERE stripe_session_id = ?", [stripe_session_id]);
+  return rows[0] || null;
+};
+
+module.exports = {
+  create, findByClient, findByProvider, findById, updateStatus, setProvider, setProposal, acceptProposal,
+  setStripeSession, markPaid, findByStripeSessionId, markRefunded,
+};

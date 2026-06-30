@@ -22,6 +22,8 @@ import CGU from "./pages/CGU";
 import MentionsLegales from "./pages/MentionsLegales";
 import Confidentialite from "./pages/Confidentialite";
 import CompleteProfile from "./pages/CompleteProfile";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PaymentCancel from "./pages/PaymentCancel";
 import NotFound from "./pages/NotFound";
 import AIAssistant from "./components/AIAssistant";
 import "./styles/global.css";
@@ -52,6 +54,8 @@ export default function App() {
         <Route path="/mentions-legales" element={<MentionsLegales />} />
         <Route path="/confidentialite" element={<Confidentialite />} />
         <Route path="/completer-profil" element={<CompleteProfile />} />
+        <Route path="/paiement/succes" element={<PaymentSuccess />} />
+        <Route path="/paiement/annule" element={<PaymentCancel />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />

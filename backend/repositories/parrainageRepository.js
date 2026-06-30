@@ -12,14 +12,19 @@ const getOrCreateCode = async (user_id) => {
 };
 
 const applyReferral = async (referred_id, code) => {
+  // Un utilisateur ne peut utiliser qu'un seul code de parrainage, une seule fois
+  const [[self]] = await db.query(`SELECT referred_by FROM users WHERE id = ?`, [referred_id]);
+  if (self?.referred_by) return { alreadyUsed: true };
+
   const [referrers] = await db.query(`SELECT id FROM users WHERE referral_code = ?`, [code]);
   if (!referrers.length) return null;
   const referrer_id = referrers[0].id;
   if (referrer_id === referred_id) return null;
+
   await db.query(`UPDATE users SET referred_by = ? WHERE id = ?`, [referrer_id, referred_id]);
   const rewardId = uuidv4();
   await db.query(
-    `INSERT IGNORE INTO referral_rewards (id, referrer_id, referred_id, credit) VALUES (?, ?, ?, 10.00)`,
+    `INSERT INTO referral_rewards (id, referrer_id, referred_id, credit) VALUES (?, ?, ?, 10.00)`,
     [rewardId, referrer_id, referred_id]
   );
   return { referrer_id, credit: 10 };
@@ -43,4 +48,17 @@ const getTotalCredit = async (user_id) => {
   return parseFloat(rows[0]?.total || 0);
 };
 
-module.exports = { getOrCreateCode, applyReferral, getRewards, getTotalCredit };
+const getUnusedRewards = async (user_id) => {
+  const [rows] = await db.query(
+    `SELECT id, credit FROM referral_rewards WHERE referrer_id = ? AND used = 0 ORDER BY created_at ASC`,
+    [user_id]
+  );
+  return rows;
+};
+
+const markRewardsUsed = async (ids) => {
+  if (!ids.length) return;
+  await db.query(`UPDATE referral_rewards SET used = 1 WHERE id IN (?)`, [ids]);
+};
+
+module.exports = { getOrCreateCode, applyReferral, getRewards, getTotalCredit, getUnusedRewards, markRewardsUsed };

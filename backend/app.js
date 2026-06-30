@@ -11,6 +11,10 @@ const app = express();
 app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(morgan("dev"));
+
+// Webhook Stripe : body brut requis pour la vérification de signature, AVANT express.json()
+app.post("/api/payments/webhook", express.raw({ type: "application/json" }), require("./controllers/paymentController").webhook);
+
 app.use(express.json());
 app.use("/api", apiLimiter);
 
@@ -35,6 +39,7 @@ app.use("/api/favoris",        require("./routes/favorisRoutes"));
 app.use("/api/disponibilites", require("./routes/disponibiliteRoutes"));
 app.use("/api/parrainage",     require("./routes/parrainageRoutes"));
 app.use("/api/factures",       require("./routes/factureRoutes"));
+app.use("/api/payments",       require("./routes/paymentRoutes"));
 app.use("/uploads/documents", require("express").static(require("path").join(__dirname, "uploads/documents")));
 
 app.get("/api/health", (_, res) => res.json({ status: "ok" }));
