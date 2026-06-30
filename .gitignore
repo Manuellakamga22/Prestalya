@@ -12,6 +12,18 @@ dist
 dist-ssr
 *.local
 
+# Secrets — ne jamais commiter
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Fichiers utilisateurs uploadés (photos, pièces d'identité, documents) — sensibles, ne pas versionner
+backend/uploads/*
+!backend/uploads/.gitkeep
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

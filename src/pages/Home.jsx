@@ -3,15 +3,32 @@ import ServiceCard from "../components/ServiceCard";
 import TestimonialCard from "../components/TestimonialCard";
 import { services, testimonials } from "../data";
 import { serviceIcons } from "../components/Icons";
+import useReveal from "../hooks/useReveal";
+import SEO from "../components/SEO";
 import "../styles/Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
+  useReveal();
 
-  const stripLabels = ["Ménage", "Nett. canapé", "Désinfection", "Repassage", "Babysitting", "Informatique", "Coiffure", "Dépannages"];
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "serviceType": "Services à domicile",
+    "provider": { "@type": "Organization", "name": "Prestalya", "url": "https://prestalya.com" },
+    "areaServed": { "@type": "Country", "name": "France" },
+    "description": "Mise en relation entre particuliers et prestataires de services à domicile vérifiés."
+  };
 
   return (
     <main>
+      <SEO
+        title="Trouvez un prestataire fiable près de chez vous"
+        description="Prestalya : réservez des prestataires vérifiés à domicile. Ménage, babysitting, aide informatique, coiffure, plomberie, électricité. Disponibles partout en France."
+        path="/"
+        jsonLd={jsonLd}
+      />
       {/* ─── Hero ─── */}
       <section className="hero">
         <div className="container">
@@ -50,27 +67,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── Strip services ─── */}
-      <section className="service-strip">
-        <div className="container">
-          <div className="strip-grid">
-            {services.map((s, i) => {
-              const Icon = serviceIcons[s.slug];
-              return (
-                <div key={s.id} className="strip-item" onClick={() => navigate("/prestataires")}>
-                  <div className="strip-icon">
-                    {Icon ? <Icon size={24} /> : <span>🔧</span>}
-                  </div>
-                  <span>{stripLabels[i]}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
 
       {/* ─── Comment ça marche ─── */}
-      <section className="how-it-works">
+      <section className="how-it-works reveal">
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">Comment ça marche ?</h2>
@@ -97,7 +96,7 @@ export default function Home() {
       </section>
 
       {/* ─── Avantages ─── */}
-      <section className="advantages">
+      <section className="advantages reveal">
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">Pourquoi choisir Prestalya ?</h2>
@@ -127,9 +126,20 @@ export default function Home() {
             <h2 className="section-title">Nos services</h2>
             <p className="section-subtitle">Des prestations pour tous vos besoins, assurées par des professionnels qualifiés.</p>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 22 }}>
-            {services.slice(0, 4).map((s) => <ServiceCard key={s.id} service={s} />)}
-          </div>
+          {(() => {
+            const HOME_SLUGS = ["menage","babysitting","desinsectisation","deratisation","electricite","plomberie","coiffure","aide-informatique"];
+            const homeServices = HOME_SLUGS.map(slug => services.find(s => s.slug === slug)).filter(Boolean);
+            return (
+              <>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 22 }}>
+                  {homeServices.slice(0, 4).map(s => <ServiceCard key={s.id} service={s} />)}
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 22, marginTop: 22 }}>
+                  {homeServices.slice(4, 8).map(s => <ServiceCard key={s.id} service={s} />)}
+                </div>
+              </>
+            );
+          })()}
           <div style={{ textAlign: "center", marginTop: 32 }}>
             <Link to="/services" className="btn-outline">Voir tous les services →</Link>
           </div>
@@ -137,7 +147,7 @@ export default function Home() {
       </section>
 
       {/* ─── Témoignages ─── */}
-      <section className="testimonials-section">
+      <section className="testimonials-section reveal">
         <div className="container">
           <div className="section-header">
             <h2 className="section-title">Ce que disent nos clients</h2>

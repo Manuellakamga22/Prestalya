@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { API_ORIGIN } from "../api";
 import "../styles/cards.css";
 
 export default function ProviderCard({ provider }) {
@@ -6,19 +7,25 @@ export default function ProviderCard({ provider }) {
 
   return (
     <div className="provider-card">
-      {provider.photo ? (
-        <img
-          className="provider-photo"
-          src={provider.photo}
-          alt={provider.name}
-          onError={(e) => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
-        />
-      ) : null}
+      {(() => {
+        const photoSrc = provider.photo_url
+          ? (provider.photo_url.startsWith("/") ? `${API_ORIGIN}${provider.photo_url}` : provider.photo_url)
+          : provider.photo || null;
+        const initiales = provider.avatar || `${(provider.prenom || provider.name || "?")[0]}${(provider.nom || "")[0] || ""}`.toUpperCase();
+        return photoSrc ? (
+          <img
+            className="provider-photo"
+            src={photoSrc}
+            alt={provider.prenom || provider.name}
+            onError={(e) => { e.target.style.display = "none"; e.target.nextSibling.style.display = "flex"; }}
+          />
+        ) : null;
+      })()}
       <div
         className="provider-avatar-fallback"
-        style={{ background: provider.color, display: provider.photo ? "none" : "flex" }}
+        style={{ background: provider.color || "#7C3AED", display: (provider.photo_url || provider.photo) ? "none" : "flex" }}
       >
-        {provider.avatar}
+        {provider.avatar || `${(provider.prenom || provider.name || "?")[0]}${(provider.nom || "")[0] || ""}`.toUpperCase()}
       </div>
 
       <div className="provider-info">

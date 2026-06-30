@@ -64,6 +64,46 @@ export function IconDepannage({ size = 32, color = "currentColor" }) {
   );
 }
 
+export function IconElectricite({ size = 32, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  );
+}
+
+export function IconPlomberie({ size = 32, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2v6M8 8h8a4 4 0 010 8H8a4 4 0 010-8z" /><path d="M12 16v6" /><path d="M8 19h8" />
+    </svg>
+  );
+}
+
+export function IconMenuiserie({ size = 32, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" />
+    </svg>
+  );
+}
+
+export function IconMaquillage({ size = 32, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2C8 2 5 5.5 5 9c0 2.4 1.2 4.5 3 5.7V17h8v-2.3c1.8-1.2 3-3.3 3-5.7 0-3.5-3-7-7-7z" /><path d="M9 17v2a3 3 0 006 0v-2" />
+    </svg>
+  );
+}
+
+export function IconOnglerie({ size = 32, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 6c0-1.1.9-2 2-2h4a2 2 0 012 2v10a4 4 0 01-8 0V6z" /><path d="M8 10h8" />
+    </svg>
+  );
+}
+
 export const serviceIcons = {
   "menage": IconMenage,
   "nettoyage-canape": IconCanape,
@@ -71,6 +111,11 @@ export const serviceIcons = {
   "repassage": IconRepassage,
   "babysitting": IconBabysitting,
   "aide-informatique": IconInformatique,
-  "coiffure": IconCoiffure,
   "depannage": IconDepannage,
+  "electricite": IconElectricite,
+  "plomberie": IconPlomberie,
+  "menuiserie": IconMenuiserie,
+  "coiffure": IconCoiffure,
+  "maquillage": IconMaquillage,
+  "onglerie": IconOnglerie,
 };

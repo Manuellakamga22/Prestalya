@@ -11,12 +11,12 @@ export default function Footer() {
               <div className="logo-icon">🏠</div>
               <span>Prestalya</span>
             </div>
-            <p>Prestalya est la plateforme qui vous connecte aux meilleurs prestataires à domicile.</p>
+            <p>La plateforme qui vous connecte aux meilleurs prestataires à domicile partout en France.</p>
             <div className="footer-social">
-              <button className="social-btn" title="Facebook">f</button>
-              <button className="social-btn" title="Instagram">in</button>
-              <button className="social-btn" title="Twitter">𝕏</button>
-              <button className="social-btn" title="LinkedIn">li</button>
+              <a href="https://facebook.com" target="_blank" rel="noreferrer" className="social-btn" title="Facebook">f</a>
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="social-btn" title="Instagram">📷</a>
+              <a href="https://twitter.com" target="_blank" rel="noreferrer" className="social-btn" title="X (Twitter)">𝕏</a>
+              <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="social-btn" title="LinkedIn">in</a>
             </div>
           </div>
 
@@ -35,28 +35,30 @@ export default function Footer() {
           <div className="footer-col">
             <h4>Services populaires</h4>
             <ul>
-              <li><Link to="/services">Ménage à domicile</Link></li>
-              <li><Link to="/services">Nettoyage canapé</Link></li>
-              <li><Link to="/services">Désinfection</Link></li>
-              <li><Link to="/services">Repassage</Link></li>
-              <li><Link to="/services">Babysitting</Link></li>
-              <li><Link to="/services">Aide informatique</Link></li>
+              <li><Link to="/prestataires">Ménage à domicile</Link></li>
+              <li><Link to="/prestataires">Nettoyage canapé</Link></li>
+              <li><Link to="/prestataires">Désinfection</Link></li>
+              <li><Link to="/prestataires">Repassage</Link></li>
+              <li><Link to="/prestataires">Babysitting</Link></li>
+              <li><Link to="/prestataires">Aide informatique</Link></li>
+              <li><Link to="/prestataires">Électricité</Link></li>
+              <li><Link to="/prestataires">Coiffure à domicile</Link></li>
             </ul>
           </div>
 
           <div className="footer-col">
             <h4>Informations</h4>
             <ul>
-              <li><a href="#">FAQ</a></li>
-              <li><a href="#">CGU</a></li>
-              <li><a href="#">Confidentialité</a></li>
-              <li><a href="#">Mentions légales</a></li>
+              <li><Link to="/faq">FAQ</Link></li>
+              <li><Link to="/cgu">CGU</Link></li>
+              <li><Link to="/confidentialite">Confidentialité</Link></li>
+              <li><Link to="/mentions-legales">Mentions légales</Link></li>
             </ul>
-            <h4 style={{ marginTop: 20 }}>Contact</h4>
+            <h4 style={{ marginTop: 24 }}>Contact</h4>
             <ul>
-              <li><a href="mailto:contact@prestalya.com">contact@prestalya.com</a></li>
-              <li><a href="tel:+33123456789">+33 6 12 34 56 78</a></li>
-              <li><a href="#">Paris, France</a></li>
+              <li><a href="mailto:manuellakamga20@gmail.com">manuellakamga20@gmail.com</a></li>
+              <li><a href="tel:+33634660103">+33 6 34 66 01 03</a></li>
+              <li><span style={{ color: "rgba(255,255,255,0.6)" }}>Paris, France</span></li>
             </ul>
           </div>
         </div>
@@ -64,9 +66,10 @@ export default function Footer() {
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Prestalya – Tous droits réservés.</span>
           <div className="footer-bottom-links">
-            <a href="#">Mentions légales</a>
-            <a href="#">CGU</a>
-            <a href="#">Confidentialité</a>
+            <Link to="/mentions-legales">Mentions légales</Link>
+            <Link to="/cgu">CGU</Link>
+            <Link to="/confidentialite">Confidentialité</Link>
+            <Link to="/faq">FAQ</Link>
           </div>
         </div>
       </div>

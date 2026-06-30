@@ -1,39 +1,90 @@
-import { useState } from "react";
-import { servicesList, cities, providers } from "../data";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { api } from "../api";
+import { services as ALL_SERVICES } from "../data";
+import SEO from "../components/SEO";
 import "../styles/pages.css";
 
-const slots = ["08h00", "09h00", "10h00", "11h00", "13h00", "14h00", "15h00", "16h00", "17h00", "18h00"];
+const ALL_SLOTS = ["08h00","09h00","10h00","11h00","12h00","13h00","14h00","15h00","16h00","17h00","18h00","19h00"];
+const ALL_PLATFORM_SERVICES = ALL_SERVICES.map(s => s.title).sort();
 
 export default function Booking() {
-  const [form, setForm] = useState({ service: "", city: "", provider: "", date: "", slot: "", comment: "" });
-  const [confirmed, setConfirmed] = useState(false);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const preselectedProvider = searchParams.get("provider");
 
-  const set = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const [form, setForm] = useState({ service: "", city: "", provider_id: preselectedProvider || "", date: "", slot: "", comment: "" });
+  const [providers, setProviders] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [blockedSlots, setBlockedSlots] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  if (confirmed) {
-    return (
-      <main className="booking-page">
-        <section className="page-hero"><div className="container"><h1>Réserver une prestation</h1></div></section>
-        <div className="container">
-          <div className="success-box">
-            <div className="success-icon">✓</div>
-            <h2>Merci !</h2>
-            <p>
-              Votre demande de réservation pour <strong>{form.service}</strong> à <strong>{form.city}</strong><br />
-              le <strong>{form.date}</strong> à <strong>{form.slot}</strong> a bien été enregistrée.<br />
-              Un prestataire vous contactera sous 24h.
-            </p>
-            <button className="btn-primary" onClick={() => setConfirmed(false)}>
-              Nouvelle réservation
-            </button>
-          </div>
-        </div>
-      </main>
-    );
-  }
+  const set = (e) => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+
+  useEffect(() => {
+    api.get("/providers?limit=200").then((data) => {
+      const list = data.providers || data;
+      setProviders(list);
+      const uniqueCities = [...new Set(list.map((p) => p.city).filter(Boolean))].sort();
+      setCities(uniqueCities);
+    }).catch(() => {});
+  }, []);
+
+  // Charger les créneaux bloqués quand on choisit un prestataire + une date
+  useEffect(() => {
+    if (!form.provider_id || !form.date) { setBlockedSlots({}); return; }
+    const prov = providers.find(p => p.id === form.provider_id);
+    if (!prov) return;
+    api.get(`/disponibilites/${form.provider_id}`).then(data => {
+      setBlockedSlots(data || {});
+      setForm(f => ({ ...f, slot: "" })); // reset créneau si date/prest change
+    }).catch(() => {});
+  }, [form.provider_id, form.date]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    const stored = localStorage.getItem("user");
+    if (!stored) { navigate("/connexion"); return; }
+
+    setLoading(true);
+    try {
+      const body = {
+        service: form.service,
+        city: form.city,
+        date: form.date,
+        slot: form.slot,
+        comment: form.comment,
+      };
+      if (form.provider_id) body.provider_id = form.provider_id;
+
+      const data = await api.post("/bookings", body);
+
+      const providerName = providers.find((p) => p.id === form.provider_id)
+        ? `${providers.find((p) => p.id === form.provider_id).prenom} ${providers.find((p) => p.id === form.provider_id).nom}`
+        : "Au choix de Prestalya";
+
+      navigate("/reservation/confirmation", {
+        state: { service: form.service, date: form.date, provider: providerName, bookingId: data.id },
+      });
+    } catch (err) {
+      setError(err.message || "Une erreur est survenue. Veuillez réessayer.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const selectedProvider = providers.find((p) => p.id === form.provider_id);
 
   return (
     <main className="booking-page">
+      <SEO
+        title="Réserver une prestation à domicile"
+        description="Réservez votre prestation à domicile en quelques minutes."
+        path="/reservation"
+      />
       <section className="page-hero">
         <div className="container">
           <h1>Réserver une prestation</h1>
@@ -45,27 +96,44 @@ export default function Booking() {
         <div className="booking-layout">
           <div className="booking-form-card">
             <h2>Votre demande</h2>
-            <form onSubmit={(e) => { e.preventDefault(); setConfirmed(true); window.scrollTo(0, 0); }}>
+            {error && (
+              <div style={{ background: "#FEF2F2", color: "#DC2626", border: "1px solid #FECACA", borderRadius: 10, padding: "12px 16px", marginBottom: 20, fontSize: "0.97rem", fontWeight: 600 }}>
+                {error}
+              </div>
+            )}
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label>Service souhaité *</label>
                 <select name="service" value={form.service} onChange={set} required>
                   <option value="">Sélectionner un service</option>
-                  {servicesList.slice(1).map((s) => <option key={s}>{s}</option>)}
+                  {ALL_PLATFORM_SERVICES.map((s) => <option key={s}>{s}</option>)}
                 </select>
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label>Ville *</label>
-                  <select name="city" value={form.city} onChange={set} required>
-                    <option value="">Sélectionner une ville</option>
-                    {cities.slice(1).map((c) => <option key={c}>{c}</option>)}
-                  </select>
+                  <input
+                    type="text"
+                    name="city"
+                    value={form.city}
+                    onChange={set}
+                    required
+                    placeholder="Ex : Paris, Lyon, Marseille…"
+                    list="cities-list"
+                  />
+                  <datalist id="cities-list">
+                    {cities.map((c) => <option key={c} value={c} />)}
+                  </datalist>
                 </div>
                 <div className="form-group">
                   <label>Prestataire</label>
-                  <select name="provider" value={form.provider} onChange={set}>
+                  <select name="provider_id" value={form.provider_id} onChange={set}>
                     <option value="">Au choix de Prestalya</option>
-                    {providers.map((p) => <option key={p.id} value={p.name}>{p.name}</option>)}
+                    {providers.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.prenom} {p.nom} — {p.service}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -79,8 +147,20 @@ export default function Booking() {
                   <label>Créneau horaire *</label>
                   <select name="slot" value={form.slot} onChange={set} required>
                     <option value="">Sélectionner un créneau</option>
-                    {slots.map((s) => <option key={s}>{s}</option>)}
+                    {ALL_SLOTS.map(s => {
+                      const isBlocked = form.date && !!blockedSlots[form.date]?.[s];
+                      return (
+                        <option key={s} value={s} disabled={isBlocked}>
+                          {s}{isBlocked ? " — Indisponible" : ""}
+                        </option>
+                      );
+                    })}
                   </select>
+                  {form.provider_id && form.date && Object.keys(blockedSlots).length > 0 && (
+                    <p style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 4 }}>
+                      Les créneaux grisés sont indisponibles pour ce prestataire ce jour-là.
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="form-group">
@@ -88,8 +168,10 @@ export default function Booking() {
                 <textarea name="comment" value={form.comment} onChange={set}
                   placeholder="Superficie, accès, consignes particulières..." />
               </div>
-              <button type="submit" className="btn-primary" style={{ width: "100%", padding: "13px", justifyContent: "center", fontSize: "0.95rem" }}>
-                Confirmer la réservation
+              <button type="submit" className="btn-primary"
+                style={{ width: "100%", padding: "13px", justifyContent: "center", fontSize: "0.95rem", opacity: loading ? 0.7 : 1 }}
+                disabled={loading}>
+                {loading ? "Envoi en cours…" : "Confirmer la réservation"}
               </button>
             </form>
           </div>
@@ -100,7 +182,7 @@ export default function Booking() {
               {[
                 ["Service", form.service],
                 ["Ville", form.city],
-                ["Prestataire", form.provider || "Au choix de Prestalya"],
+                ["Prestataire", selectedProvider ? `${selectedProvider.prenom} ${selectedProvider.nom}` : "Au choix de Prestalya"],
                 ["Date", form.date],
                 ["Créneau", form.slot],
               ].map(([label, val]) => (
