@@ -131,10 +131,10 @@ export default function Home() {
             const homeServices = HOME_SLUGS.map(slug => services.find(s => s.slug === slug)).filter(Boolean);
             return (
               <>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 22 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 22 }}>
                   {homeServices.slice(0, 4).map(s => <ServiceCard key={s.id} service={s} />)}
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 22, marginTop: 22 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 22, marginTop: 22 }}>
                   {homeServices.slice(4, 8).map(s => <ServiceCard key={s.id} service={s} />)}
                 </div>
               </>

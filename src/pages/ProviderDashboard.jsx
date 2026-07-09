@@ -95,7 +95,7 @@ function ProviderCalendar({ year, month, blockedDates, onToggleSlot, onPrev, onN
           <p style={{ color: "var(--gray-500)", fontSize: "0.9rem", marginBottom: 16 }}>
             Cliquez un créneau <strong>disponible</strong> pour le rendre indisponible (ou inversement). Les créneaux réservés ou en attente sont gérés automatiquement depuis l'onglet « Mes demandes ».
           </p>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: 10 }}>
             {ALL_SLOTS.map(slot => {
               const status = slotStatus(popup, slot);
               const st = SLOT_STATUS_STYLE[status];
@@ -1012,7 +1012,7 @@ export default function ProviderDashboard() {
           {tab === "gains" && (
             <div className="dash-section">
               <h2>Mes gains</h2>
-              <div className="dash-kpi-grid" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
+              <div className="dash-kpi-grid">
                 {[
                   { icon: "🎯", val: `${bookings.filter(b=>b.status==="termine").reduce((s,b)=>s+parseFloat(b.montant_ht||0),0).toFixed(2)} €`, label: "CA brut HT",          color: "#2563EB" },
                   { icon: "📤", val: `${bookings.filter(b=>b.status==="termine").reduce((s,b)=>s+parseFloat(b.montant_commission||0),0).toFixed(2)} €`, label: "Commission plateforme", color: "#DC2626" },

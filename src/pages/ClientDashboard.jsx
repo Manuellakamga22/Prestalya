@@ -559,7 +559,7 @@ export default function ClientDashboard() {
           {tab === "parrainage" && (
             <div className="dash-section">
               <h2>🎁 Programme de parrainage</h2>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 28 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 20, marginBottom: 28 }}>
                 <div style={{ background: "linear-gradient(135deg,#6366F1,#7C3AED)", borderRadius: 16, padding: "24px", color: "#fff", textAlign: "center" }}>
                   <p style={{ margin: "0 0 8px", opacity: 0.85, fontSize: "0.9rem" }}>Mon code parrainage</p>
                   <p style={{ margin: "0 0 16px", fontSize: "2rem", fontWeight: 900, letterSpacing: "0.15em" }}>{referralCode || "…"}</p>

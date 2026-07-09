@@ -31,7 +31,7 @@ export default function Confidentialite() {
 
       <section style={{ padding: "64px 0 96px" }}>
         <div className="container" style={{ maxWidth: 760 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16, marginBottom: 48 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 16, marginBottom: 48 }}>
             {[
               { icon: "🔒", label: "Données chiffrées" },
               { icon: "🚫", label: "Zéro revente" },

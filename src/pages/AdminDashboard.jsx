@@ -238,7 +238,7 @@ export default function AdminDashboard() {
           {tab === "revenus" && (
             <div className="dash-section">
               <h2>Revenus plateforme</h2>
-              <div className="dash-stats" style={{ gridTemplateColumns: "repeat(3,1fr)" }}>
+              <div className="dash-stats">
                 <div className="dash-stat-card">
                   <span className="dash-stat-icon">💰</span>
                   <span className="dash-stat-value">{totalRevenu}€</span>

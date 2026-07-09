@@ -25,6 +25,7 @@ export default function PrebookingChat({ service, providerId, onClose }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: next, service }),
       });
+      if (!res.ok) throw new Error(`Erreur ${res.status}`);
       const data = await res.json();
       setMessages(m => [...m, { role: "assistant", content: data.message }]);
       if (data.resume) setResume(data.resume);

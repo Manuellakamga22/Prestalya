@@ -495,9 +495,16 @@
 }
 @media (max-width: 600px) {
   .dash-kpi-grid { grid-template-columns: repeat(2,1fr); }
+  .dash-stats { grid-template-columns: repeat(2,1fr); }
   .dash-welcome  { flex-direction: column; align-items: flex-start; gap: 12px; }
   .dash-booking-row { flex-wrap: wrap; }
   .dash-next-booking { flex-wrap: wrap; }
+  .dash-search-fields { grid-template-columns: 1fr; }
+  .dash-service-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 400px) {
+  .dash-kpi-grid { grid-template-columns: 1fr; }
+  .dash-stats { grid-template-columns: 1fr; }
 }
 
 /* ── Mini Calendar ── */

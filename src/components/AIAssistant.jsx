@@ -54,6 +54,7 @@ export default function AIAssistant() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: apiMessages }),
       });
+      if (!res.ok) throw new Error(`Erreur ${res.status}`);
       const data = await res.json();
       const aiMsg = { role: "assistant", content: data.message };
       setMessages(prev => [...prev, aiMsg]);
