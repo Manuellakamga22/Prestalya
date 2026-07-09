@@ -9,7 +9,17 @@ const errorHandler = require("./middleware/errorHandler");
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowed = process.env.CLIENT_URL || "http://localhost:5173";
+    if (!origin || origin === allowed || origin.endsWith(".vercel.app") || origin === "http://localhost:5173") {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS non autorisé"));
+    }
+  },
+  credentials: true,
+}));
 app.use(morgan("dev"));
 
 // Webhook Stripe : body brut requis pour la vérification de signature, AVANT express.json()
