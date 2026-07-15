@@ -1,15 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import ServiceCard from "../components/ServiceCard";
 import TestimonialCard from "../components/TestimonialCard";
 import { services, testimonials } from "../data";
 import { serviceIcons } from "../components/Icons";
 import useReveal from "../hooks/useReveal";
 import SEO from "../components/SEO";
+import { api } from "../api";
 import "../styles/Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
   useReveal();
+  const [siteAvis, setSiteAvis] = useState([]);
+  useEffect(() => {
+    api.get("/site-reviews").then(data => setSiteAvis(data.slice(0, 6))).catch(() => {});
+  }, []);
 
 
   const jsonLd = {
@@ -154,7 +160,26 @@ export default function Home() {
             <p className="section-subtitle">Des milliers de clients satisfaits font confiance à Prestalya.</p>
           </div>
           <div className="testimonials-grid">
-            {testimonials.map((t, i) => <TestimonialCard key={i} testimonial={t} />)}
+            {siteAvis.length > 0
+              ? siteAvis.map(a => (
+                  <div key={a.id} style={{ background: "#fff", borderRadius: 16, padding: "24px", boxShadow: "0 2px 12px rgba(0,0,0,0.07)", display: "flex", flexDirection: "column", gap: 12 }}>
+                    <div style={{ display: "flex", gap: 4 }}>
+                      {[1,2,3,4,5].map(n => <span key={n} style={{ color: n <= a.note ? "#F59E0B" : "#E5E7EB", fontSize: "1.1rem" }}>★</span>)}
+                    </div>
+                    <p style={{ fontSize: "0.97rem", color: "var(--gray-600)", fontStyle: "italic", margin: 0 }}>"{a.commentaire}"</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: "auto" }}>
+                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg,#6366F1,#7C3AED)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: "0.9rem", flexShrink: 0 }}>
+                        {a.auteur?.split(" ").map(w => w[0]).join("").slice(0,2)}
+                      </div>
+                      <div>
+                        <p style={{ margin: 0, fontWeight: 700, fontSize: "0.9rem" }}>{a.auteur}</p>
+                        <p style={{ margin: 0, color: "var(--gray-400)", fontSize: "0.78rem" }}>Client Prestalya</p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              : testimonials.map((t, i) => <TestimonialCard key={i} testimonial={t} />)
+            }
           </div>
         </div>
       </section>

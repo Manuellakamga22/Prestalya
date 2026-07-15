@@ -50,6 +50,7 @@ app.use("/api/disponibilites", require("./routes/disponibiliteRoutes"));
 app.use("/api/parrainage",     require("./routes/parrainageRoutes"));
 app.use("/api/factures",       require("./routes/factureRoutes"));
 app.use("/api/payments",       require("./routes/paymentRoutes"));
+app.use("/api/site-reviews",   require("./routes/siteReviewRoutes"));
 app.use("/uploads/documents", require("express").static(require("path").join(__dirname, "uploads/documents")));
 
 app.get("/api/health", (_, res) => res.json({ status: "ok" }));

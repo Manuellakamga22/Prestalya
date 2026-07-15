@@ -23,6 +23,10 @@ export default function ClientDashboard() {
   const [photoUrl, setPhotoUrl]   = useState(null);
   const [photoLoad, setPhotoLoad] = useState(false);
   const [photoMsg, setPhotoMsg]   = useState(null);
+  const [siteAvisForm, setSiteAvisForm]   = useState({ note: 5, commentaire: "" });
+  const [siteAvisLoading, setSiteAvisLoad]= useState(false);
+  const [siteAvisMsg, setSiteAvisMsg]     = useState(null);
+  const [siteAvisDone, setSiteAvisDone]   = useState(false);
   const photoInputRef = React.useRef(null);
 
   // recherche
@@ -55,8 +59,8 @@ export default function ClientDashboard() {
     if (u.role === "prestataire") { navigate("/prestataire"); return; }
     setUser(u);
     setPhotoUrl(u.photo_url || null);
-    Promise.all([api.get("/bookings/me"), api.get("/chat")])
-      .then(([b, c]) => { setBookings(b); setConvs(c); })
+    Promise.all([api.get("/bookings/me"), api.get("/chat"), api.get("/site-reviews/mine")])
+      .then(([b, c, m]) => { setBookings(b); setConvs(c); if (m.hasReviewed) setSiteAvisDone(true); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -290,6 +294,7 @@ export default function ClientDashboard() {
               { key: "messages",      icon: "💬", label: "Messages", badge: unread },
               { key: "parrainage",    icon: "🎁", label: "Parrainage" },
               { key: "profil",        icon: "👤", label: "Mon profil" },
+              { key: "avis-site",     icon: "⭐", label: "Mon avis" },
             ].map(n => (
               <button key={n.key} className={tab === n.key ? "active" : ""} onClick={() => setTab(n.key)}>
                 {n.icon} {n.label}
@@ -758,6 +763,57 @@ export default function ClientDashboard() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {tab === "avis-site" && (
+            <div className="dash-section">
+              <h2>⭐ Donner mon avis sur Prestalya</h2>
+              <p style={{ color: "var(--gray-500)", marginBottom: 24 }}>
+                Votre retour nous aide à améliorer la plateforme. Il sera visible sur la page d'accueil.
+              </p>
+              {siteAvisDone ? (
+                <div style={{ background: "#D1FAE5", border: "1.5px solid #6EE7B7", borderRadius: 14, padding: "24px", textAlign: "center" }}>
+                  <p style={{ fontSize: "2rem", marginBottom: 8 }}>✅</p>
+                  <p style={{ fontWeight: 800, fontSize: "1.1rem", color: "#065F46" }}>Merci pour votre avis !</p>
+                  <p style={{ color: "#047857", marginTop: 4 }}>Votre témoignage est publié sur la page d'accueil.</p>
+                </div>
+              ) : (
+                <form onSubmit={async e => {
+                  e.preventDefault();
+                  setSiteAvisLoad(true);
+                  setSiteAvisMsg(null);
+                  try {
+                    await api.post("/site-reviews", siteAvisForm);
+                    setSiteAvisDone(true);
+                  } catch (err) {
+                    setSiteAvisMsg(err.message || "Erreur, veuillez réessayer.");
+                  } finally { setSiteAvisLoad(false); }
+                }}>
+                  <div style={{ marginBottom: 20 }}>
+                    <p style={{ fontWeight: 700, marginBottom: 10 }}>Votre note globale</p>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      {[1,2,3,4,5].map(n => (
+                        <span key={n} onClick={() => setSiteAvisForm(f => ({ ...f, note: n }))}
+                          style={{ fontSize: "2rem", cursor: "pointer", color: n <= siteAvisForm.note ? "#F59E0B" : "#D1D5DB", transition: "color 0.15s" }}>★</span>
+                      ))}
+                      <span style={{ marginLeft: 8, fontWeight: 800, fontSize: "1.1rem", color: "#F59E0B", alignSelf: "center" }}>{siteAvisForm.note}/5</span>
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label>Votre témoignage *</label>
+                    <textarea rows={4} value={siteAvisForm.commentaire}
+                      onChange={e => setSiteAvisForm(f => ({ ...f, commentaire: e.target.value }))}
+                      placeholder="Dites-nous ce que vous pensez de Prestalya…"
+                      required minLength={5} />
+                  </div>
+                  {siteAvisMsg && <p style={{ color: "#DC2626", fontWeight: 600, marginBottom: 12 }}>{siteAvisMsg}</p>}
+                  <button type="submit" className="btn-primary" disabled={siteAvisLoading}
+                    style={{ padding: "12px 28px", justifyContent: "center" }}>
+                    {siteAvisLoading ? "Envoi…" : "Publier mon avis"}
+                  </button>
+                </form>
+              )}
             </div>
           )}
 
