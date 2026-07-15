@@ -836,7 +836,7 @@ export default function ProviderDashboard() {
               try {
                 for (const [key, checked] of Object.entries(pendingSlots)) {
                   const [date, slot] = key.split("__");
-                  const apiSlot = slot.slice(0,5).replace(":", "h") + "00";
+                  const apiSlot = slot.slice(0,5).replace(":", "h");
                   const currentSt = blockedDates[date]?.[apiSlot];
                   const isCurrentlyDispo = currentSt === "disponible";
                   if (checked !== isCurrentlyDispo) {
@@ -910,7 +910,7 @@ export default function ProviderDashboard() {
                           <td style={{ padding: "6px 8px", fontSize: "0.82rem", color: "var(--gray-500)", whiteSpace: "nowrap", borderBottom: "1px solid #F3F4F6" }}>{slot}</td>
                           {weekDates.map(date => {
                             const checked = isChecked(date, slot);
-                            const apiSlot = slot.slice(0,5).replace(":", "h") + "00";
+                            const apiSlot = slot.slice(0,5).replace(":", "h");
                             const st = blockedDates[date]?.[apiSlot];
                             const isBooked = st === "en_attente" || st === "reserve";
                             return (
