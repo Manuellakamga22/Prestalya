@@ -177,6 +177,170 @@ function AvisListe({ providerId }) {
   );
 }
 
+const JOURS_SEMAINE = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+const WEEK_SLOTS = ["08:00-09:00","09:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","15:00-16:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00"];
+
+function getWeekDates(offset) {
+  const today = new Date();
+  const day = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1) + offset * 7);
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return d.toISOString().slice(0, 10);
+  });
+}
+
+function PlanningHebdo({ blockedDates, setBlockedDates, onToggle }) {
+  const [weekOffset, setWeekOffset] = useState(0);
+  const [pendingSlots, setPendingSlots] = useState({});
+  const [saving, setSaving] = useState(false);
+  const weekDates = getWeekDates(weekOffset);
+
+  const slotKey = (date, slot) => `${date}__${slot}`;
+  const toApiSlot = (slot) => slot.slice(0,5).replace(":", "h");
+
+  const isChecked = (date, slot) => {
+    const key = slotKey(date, slot);
+    if (key in pendingSlots) return pendingSlots[key];
+    return blockedDates[date]?.[toApiSlot(slot)] === "disponible";
+  };
+
+  const toggle = (date, slot) => {
+    const key = slotKey(date, slot);
+    setPendingSlots(p => ({ ...p, [key]: !isChecked(date, slot) }));
+  };
+
+  const selectDay = (date) => {
+    const allChecked = WEEK_SLOTS.every(s => isChecked(date, s));
+    const updates = {};
+    WEEK_SLOTS.forEach(s => { updates[slotKey(date, s)] = !allChecked; });
+    setPendingSlots(p => ({ ...p, ...updates }));
+  };
+
+  const totalChecked = weekDates.reduce((acc, date) =>
+    acc + WEEK_SLOTS.filter(s => isChecked(date, s)).length, 0);
+
+  const saveAll = async () => {
+    setSaving(true);
+    try {
+      for (const [key, checked] of Object.entries(pendingSlots)) {
+        const [date, slot] = key.split("__");
+        const apiSlot = toApiSlot(slot);
+        const isCurrentlyDispo = blockedDates[date]?.[apiSlot] === "disponible";
+        if (checked !== isCurrentlyDispo) {
+          await api.post("/disponibilites/toggle", { date_off: date, slot: apiSlot });
+        }
+      }
+      const s = await api.get("/provider-dash/stats");
+      if (s.provider_id) {
+        const d = await api.get(`/disponibilites/${s.provider_id}`);
+        setBlockedDates(d);
+      }
+      setPendingSlots({});
+    } catch (err) { alert(err.message || "Erreur"); }
+    finally { setSaving(false); }
+  };
+
+  const d1 = new Date(weekDates[0]);
+  const d2 = new Date(weekDates[6]);
+  const weekLabel = `Semaine du ${d1.getDate()}/${d1.getMonth()+1} au ${d2.getDate()}/${d2.getMonth()+1}`;
+  const todayIso = new Date().toISOString().slice(0,10);
+
+  return (
+    <div className="dash-section">
+      <h2>📅 Mon planning</h2>
+      <p style={{ color: "var(--gray-500)", marginBottom: 20 }}>
+        Cochez vos créneaux disponibles. Les clients verront exactement cette grille pour choisir leur intervention.
+      </p>
+      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
+        <button onClick={() => setWeekOffset(w => w-1)} style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #E5E7EB", background: "#fff", cursor: "pointer", fontWeight: 700 }}>← Semaine préc.</button>
+        <span style={{ fontWeight: 800, fontSize: "1rem" }}>{weekLabel}</span>
+        <button onClick={() => setWeekOffset(w => w+1)} style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #E5E7EB", background: "#fff", cursor: "pointer", fontWeight: 700 }}>Semaine suiv. →</button>
+        {weekOffset !== 0 && <button onClick={() => setWeekOffset(0)} style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#7C3AED", color: "#fff", cursor: "pointer", fontWeight: 700 }}>Aujourd'hui</button>}
+      </div>
+      <div style={{ marginBottom: 16 }}>
+        <p style={{ fontWeight: 700, marginBottom: 8 }}>Sélectionner une journée entière</p>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {JOURS_SEMAINE.map((j, i) => (
+            <button key={j} onClick={() => selectDay(weekDates[i])}
+              style={{ padding: "7px 14px", borderRadius: 8, border: "1.5px solid #E5E7EB", background: "#fff", cursor: "pointer", fontWeight: 600, fontSize: "0.88rem" }}>
+              {j}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}>
+          <thead>
+            <tr>
+              <th style={{ padding: "10px 8px", textAlign: "left", color: "var(--gray-500)", fontSize: "0.85rem", borderBottom: "2px solid #E5E7EB", minWidth: 80 }}>Heure</th>
+              {JOURS_SEMAINE.map((j, i) => {
+                const isToday = weekDates[i] === todayIso;
+                return (
+                  <th key={j} style={{ padding: "10px 6px", textAlign: "center", fontWeight: 800, fontSize: "0.9rem", color: isToday ? "#7C3AED" : "var(--text)", borderBottom: isToday ? "2px solid #7C3AED" : "2px solid #E5E7EB" }}>
+                    {j}<br/><span style={{ fontSize: "0.75rem", fontWeight: 400, color: "var(--gray-400)" }}>{weekDates[i].slice(5).replace("-","/")}</span>
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {WEEK_SLOTS.map(slot => (
+              <tr key={slot}>
+                <td style={{ padding: "6px 8px", fontSize: "0.82rem", color: "var(--gray-500)", whiteSpace: "nowrap", borderBottom: "1px solid #F3F4F6" }}>{slot}</td>
+                {weekDates.map(date => {
+                  const checked = isChecked(date, slot);
+                  const st = blockedDates[date]?.[toApiSlot(slot)];
+                  const isBooked = st === "en_attente" || st === "reserve";
+                  return (
+                    <td key={date} style={{ textAlign: "center", padding: "4px", borderBottom: "1px solid #F3F4F6", background: isBooked ? "#EEF2FF" : checked ? "#F0FDF4" : "transparent" }}>
+                      {isBooked ? (
+                        <span style={{ fontSize: "0.75rem", color: "#4338CA", fontWeight: 700 }}>{st === "reserve" ? "📘" : "⏳"}</span>
+                      ) : (
+                        <input type="checkbox" checked={checked} onChange={() => toggle(date, slot)}
+                          style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#7C3AED" }} />
+                      )}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div style={{ display: "flex", gap: 12, marginTop: 20, alignItems: "center", flexWrap: "wrap" }}>
+        <button onClick={saveAll} disabled={saving || Object.keys(pendingSlots).length === 0}
+          style={{ padding: "12px 24px", background: "#7C3AED", color: "#fff", border: "none", borderRadius: 10, fontWeight: 800, cursor: "pointer", fontSize: "0.95rem", opacity: (saving || Object.keys(pendingSlots).length === 0) ? 0.6 : 1 }}>
+          {saving ? "Enregistrement…" : `✅ Valider mes disponibilités (${totalChecked})`}
+        </button>
+        <button onClick={() => setPendingSlots({})} disabled={Object.keys(pendingSlots).length === 0}
+          style={{ padding: "12px 24px", background: "#F3F4F6", color: "#374151", border: "none", borderRadius: 10, fontWeight: 700, cursor: "pointer", opacity: Object.keys(pendingSlots).length === 0 ? 0.5 : 1 }}>
+          Annuler
+        </button>
+      </div>
+      {totalChecked > 0 && (
+        <div style={{ marginTop: 20, background: "#F5F3FF", border: "1.5px solid #DDD6FE", borderRadius: 12, padding: "16px 20px" }}>
+          <p style={{ fontWeight: 800, marginBottom: 10 }}>Récapitulatif — {totalChecked} créneau(x) sélectionné(s)</p>
+          {JOURS_SEMAINE.map((j, i) => {
+            const slots = WEEK_SLOTS.filter(s => isChecked(weekDates[i], s));
+            if (!slots.length) return null;
+            return (
+              <div key={j} style={{ marginBottom: 8 }}>
+                <p style={{ fontWeight: 700, marginBottom: 4, fontSize: "0.9rem" }}>{j}</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                  {slots.map(s => <span key={s} style={{ padding: "3px 10px", background: "#EDE9FE", color: "#7C3AED", borderRadius: 20, fontSize: "0.82rem", fontWeight: 700 }}>{s}</span>)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 const SERVICES = ALL_SERVICES.map(s => s.title).sort();
 const CITIES = [
   "Paris","Lyon","Marseille","Toulouse","Nice","Nantes","Strasbourg","Montpellier",
@@ -785,188 +949,7 @@ export default function ProviderDashboard() {
           )}
 
           {/* ── PLANNING HEBDOMADAIRE ── */}
-          {tab === "calendrier" && (() => {
-            const JOURS = ["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
-            const WEEK_SLOTS = ["08:00-09:00","09:00-10:00","10:00-11:00","11:00-12:00","12:00-13:00","13:00-14:00","14:00-15:00","15:00-16:00","16:00-17:00","17:00-18:00","18:00-19:00","19:00-20:00"];
-
-            // Calcul de la semaine affichée
-            const getWeekDates = (offset) => {
-              const today = new Date();
-              const day = today.getDay();
-              const monday = new Date(today);
-              monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1) + offset * 7);
-              return Array.from({ length: 7 }, (_, i) => {
-                const d = new Date(monday);
-                d.setDate(monday.getDate() + i);
-                return d.toISOString().slice(0, 10);
-              });
-            };
-
-            const [weekOffset, setWeekOffset] = useState(0);
-            const [pendingSlots, setPendingSlots] = useState({});
-            const [saving, setSaving] = useState(false);
-            const weekDates = getWeekDates(weekOffset);
-
-            const slotKey = (date, slot) => `${date}__${slot}`;
-            const isChecked = (date, slot) => {
-              const key = slotKey(date, slot);
-              if (key in pendingSlots) return pendingSlots[key];
-              const st = blockedDates[date]?.[slot.replace(":","h").replace("-","").slice(0,5)];
-              return st === "disponible";
-            };
-
-            const toggle = (date, slot) => {
-              const key = slotKey(date, slot);
-              const current = isChecked(date, slot);
-              setPendingSlots(p => ({ ...p, [key]: !current }));
-            };
-
-            const totalChecked = weekDates.reduce((acc, date) =>
-              acc + WEEK_SLOTS.filter(s => isChecked(date, s)).length, 0);
-
-            const selectDay = (date) => {
-              const allChecked = WEEK_SLOTS.every(s => isChecked(date, s));
-              const updates = {};
-              WEEK_SLOTS.forEach(s => { updates[slotKey(date, s)] = !allChecked; });
-              setPendingSlots(p => ({ ...p, ...updates }));
-            };
-
-            const saveAll = async () => {
-              setSaving(true);
-              try {
-                for (const [key, checked] of Object.entries(pendingSlots)) {
-                  const [date, slot] = key.split("__");
-                  const apiSlot = slot.slice(0,5).replace(":", "h");
-                  const currentSt = blockedDates[date]?.[apiSlot];
-                  const isCurrentlyDispo = currentSt === "disponible";
-                  if (checked !== isCurrentlyDispo) {
-                    await api.post("/disponibilites/toggle", { date_off: date, slot: apiSlot });
-                  }
-                }
-                const s = await api.get("/provider-dash/stats");
-                if (s.provider_id) {
-                  const d = await api.get(`/disponibilites/${s.provider_id}`);
-                  setBlockedDates(d);
-                }
-                setPendingSlots({});
-              } catch (err) { alert(err.message || "Erreur"); }
-              finally { setSaving(false); }
-            };
-
-            const weekLabel = (() => {
-              const d1 = new Date(weekDates[0]);
-              const d2 = new Date(weekDates[6]);
-              return `Semaine du ${d1.getDate()}/${d1.getMonth()+1} au ${d2.getDate()}/${d2.getMonth()+1}`;
-            })();
-
-            return (
-              <div className="dash-section">
-                <h2>📅 Mon planning</h2>
-                <p style={{ color: "var(--gray-500)", marginBottom: 20 }}>
-                  Cochez vos créneaux disponibles. Les clients verront exactement cette grille pour choisir leur intervention.
-                </p>
-
-                {/* Navigation semaine */}
-                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
-                  <button onClick={() => setWeekOffset(w => w-1)} style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #E5E7EB", background: "#fff", cursor: "pointer", fontWeight: 700 }}>← Semaine préc.</button>
-                  <span style={{ fontWeight: 800, fontSize: "1rem" }}>{weekLabel}</span>
-                  <button onClick={() => setWeekOffset(w => w+1)} style={{ padding: "8px 16px", borderRadius: 8, border: "1.5px solid #E5E7EB", background: "#fff", cursor: "pointer", fontWeight: 700 }}>Semaine suiv. →</button>
-                  {weekOffset !== 0 && <button onClick={() => setWeekOffset(0)} style={{ padding: "8px 16px", borderRadius: 8, border: "none", background: "#7C3AED", color: "#fff", cursor: "pointer", fontWeight: 700 }}>Aujourd'hui</button>}
-                </div>
-
-                {/* Sélection journée entière */}
-                <div style={{ marginBottom: 16 }}>
-                  <p style={{ fontWeight: 700, marginBottom: 8, color: "var(--text)" }}>Sélectionner une journée entière</p>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    {JOURS.map((j, i) => (
-                      <button key={j} onClick={() => selectDay(weekDates[i])}
-                        style={{ padding: "7px 14px", borderRadius: 8, border: "1.5px solid #E5E7EB", background: "#fff", cursor: "pointer", fontWeight: 600, fontSize: "0.88rem" }}>
-                        {j}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Grille */}
-                <div style={{ overflowX: "auto" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}>
-                    <thead>
-                      <tr>
-                        <th style={{ padding: "10px 8px", textAlign: "left", color: "var(--gray-500)", fontSize: "0.85rem", borderBottom: "2px solid #E5E7EB", minWidth: 80 }}>Heure</th>
-                        {JOURS.map((j, i) => {
-                          const today = new Date().toISOString().slice(0,10);
-                          const isToday = weekDates[i] === today;
-                          return (
-                            <th key={j} style={{ padding: "10px 6px", textAlign: "center", fontWeight: 800, fontSize: "0.9rem", borderBottom: "2px solid #E5E7EB", color: isToday ? "#7C3AED" : "var(--text)", borderBottom: isToday ? "2px solid #7C3AED" : "2px solid #E5E7EB" }}>
-                              {j}<br/><span style={{ fontSize: "0.75rem", fontWeight: 400, color: "var(--gray-400)" }}>{weekDates[i].slice(5).replace("-","/")} </span>
-                            </th>
-                          );
-                        })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {WEEK_SLOTS.map(slot => (
-                        <tr key={slot}>
-                          <td style={{ padding: "6px 8px", fontSize: "0.82rem", color: "var(--gray-500)", whiteSpace: "nowrap", borderBottom: "1px solid #F3F4F6" }}>{slot}</td>
-                          {weekDates.map(date => {
-                            const checked = isChecked(date, slot);
-                            const apiSlot = slot.slice(0,5).replace(":", "h");
-                            const st = blockedDates[date]?.[apiSlot];
-                            const isBooked = st === "en_attente" || st === "reserve";
-                            return (
-                              <td key={date} style={{ textAlign: "center", padding: "4px", borderBottom: "1px solid #F3F4F6", background: isBooked ? "#EEF2FF" : checked ? "#F0FDF4" : "transparent" }}>
-                                {isBooked ? (
-                                  <span style={{ fontSize: "0.75rem", color: "#4338CA", fontWeight: 700 }}>
-                                    {st === "reserve" ? "📘" : "⏳"}
-                                  </span>
-                                ) : (
-                                  <input type="checkbox" checked={checked} onChange={() => toggle(date, slot)}
-                                    style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#7C3AED" }} />
-                                )}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Boutons valider */}
-                <div style={{ display: "flex", gap: 12, marginTop: 20, alignItems: "center", flexWrap: "wrap" }}>
-                  <button onClick={saveAll} disabled={saving || Object.keys(pendingSlots).length === 0}
-                    style={{ padding: "12px 24px", background: "#7C3AED", color: "#fff", border: "none", borderRadius: 10, fontWeight: 800, cursor: "pointer", fontSize: "0.95rem", opacity: (saving || Object.keys(pendingSlots).length === 0) ? 0.6 : 1 }}>
-                    {saving ? "Enregistrement…" : `✅ Valider mes disponibilités (${totalChecked})`}
-                  </button>
-                  <button onClick={() => setPendingSlots({})} disabled={Object.keys(pendingSlots).length === 0}
-                    style={{ padding: "12px 24px", background: "#F3F4F6", color: "#374151", border: "none", borderRadius: 10, fontWeight: 700, cursor: "pointer", opacity: Object.keys(pendingSlots).length === 0 ? 0.5 : 1 }}>
-                    Annuler
-                  </button>
-                </div>
-
-                {/* Récapitulatif */}
-                {totalChecked > 0 && (
-                  <div style={{ marginTop: 20, background: "#F5F3FF", border: "1.5px solid #DDD6FE", borderRadius: 12, padding: "16px 20px" }}>
-                    <p style={{ fontWeight: 800, marginBottom: 10 }}>Récapitulatif — {totalChecked} créneau(x) sélectionné(s)</p>
-                    {JOURS.map((j, i) => {
-                      const slots = WEEK_SLOTS.filter(s => isChecked(weekDates[i], s));
-                      if (!slots.length) return null;
-                      return (
-                        <div key={j} style={{ marginBottom: 8 }}>
-                          <p style={{ fontWeight: 700, marginBottom: 4, fontSize: "0.9rem" }}>{j}</p>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                            {slots.map(s => (
-                              <span key={s} style={{ padding: "3px 10px", background: "#EDE9FE", color: "#7C3AED", borderRadius: 20, fontSize: "0.82rem", fontWeight: 700 }}>{s}</span>
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })()}
+          {tab === "calendrier" && <PlanningHebdo blockedDates={blockedDates} setBlockedDates={setBlockedDates} />}
 
           {/* ── DEVIS REÇUS ── */}
           {tab === "devis" && (
