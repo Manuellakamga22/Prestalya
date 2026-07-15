@@ -145,10 +145,7 @@ export default function Booking() {
                   <label>Créneau horaire *</label>
                   {form.provider_id && form.date ? (() => {
                     const slotsForDay = disponibilites[form.date] || {};
-                    const availableSlots = ALL_SLOTS.filter(s => {
-                      const st = slotsForDay[s];
-                      return !st || st === "disponible";
-                    });
+                    const availableSlots = ALL_SLOTS.filter(s => slotsForDay[s] === "disponible");
                     return availableSlots.length === 0 ? (
                       <p style={{ color: "#DC2626", fontSize: "0.9rem", fontWeight: 600 }}>
                         Aucun créneau disponible pour ce prestataire à cette date.

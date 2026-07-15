@@ -11,8 +11,8 @@ const ALL_SLOTS = ["08h00","09h00","10h00","11h00","12h00","13h00","14h00","15h0
 
 // Statuts de créneau : disponible (absent) | indisponible (bloqué manuellement) | en_attente (demande reçue) | reserve (confirmé)
 const SLOT_STATUS_STYLE = {
+  absent:       { bg: "#F9FAFB", border: "#E5E7EB", color: "#9CA3AF", label: "Non défini" },
   disponible:   { bg: "#F0FDF4", border: "#D1FAE5", color: "#065F46", label: "Disponible" },
-  indisponible: { bg: "#FEE2E2", border: "#DC2626", color: "#DC2626", label: "Indisponible" },
   en_attente:   { bg: "#FEF3C7", border: "#D97706", color: "#D97706", label: "En attente" },
   reserve:      { bg: "#DBEAFE", border: "#2563EB", color: "#2563EB", label: "Réservé" },
 };
@@ -29,13 +29,14 @@ function ProviderCalendar({ year, month, blockedDates, onToggleSlot, onPrev, onN
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
 
   const slotsForDay = (iso) => (blockedDates && blockedDates[iso]) ? blockedDates[iso] : {};
-  const slotStatus = (iso, slot) => slotsForDay(iso)[slot] || "disponible";
+  const slotStatus = (iso, slot) => slotsForDay(iso)[slot] || "absent";
 
   const dayStatus = (iso) => {
     const slots = slotsForDay(iso);
-    const taken = Object.keys(slots).length;
-    if (taken === 0) return "libre";
-    if (taken >= ALL_SLOTS.length) return "plein";
+    const disponibles = Object.values(slots).filter(s => s === "disponible").length;
+    const reserves = Object.values(slots).filter(s => s === "en_attente" || s === "reserve").length;
+    if (disponibles === 0 && reserves === 0) return "vide";
+    if (disponibles + reserves >= ALL_SLOTS.length) return "plein";
     return "partiel";
   };
 
@@ -54,8 +55,8 @@ function ProviderCalendar({ year, month, blockedDates, onToggleSlot, onPrev, onN
             const iso = `${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
             const isPast = iso < today;
             const status = dayStatus(iso);
-            const bg = isPast ? "#F3F4F6" : status === "plein" ? "#FEE2E2" : status === "partiel" ? "#FEF3C7" : "#D1FAE5";
-            const color = isPast ? "#9CA3AF" : status === "plein" ? "#DC2626" : status === "partiel" ? "#D97706" : "#065F46";
+            const bg = isPast ? "#F3F4F6" : status === "vide" ? "#F9FAFB" : status === "plein" ? "#DBEAFE" : "#D1FAE5";
+            const color = isPast ? "#9CA3AF" : status === "vide" ? "#9CA3AF" : status === "plein" ? "#2563EB" : "#065F46";
             return (
               <div key={i}
                 style={{ background: bg, color, fontWeight: 700, borderRadius: 8, padding: "6px 2px", textAlign: "center",
@@ -65,8 +66,8 @@ function ProviderCalendar({ year, month, blockedDates, onToggleSlot, onPrev, onN
                 title={isPast ? "" : "Cliquer pour gérer les créneaux"}
               >
                 {d}
-                {status === "partiel" && <div style={{ fontSize: "0.55rem", lineHeight: 1 }}>partiel</div>}
-                {status === "plein" && <div style={{ fontSize: "0.55rem", lineHeight: 1 }}>occupé</div>}
+                {status === "partiel" && <div style={{ fontSize: "0.55rem", lineHeight: 1 }}>dispo</div>}
+                {status === "plein" && <div style={{ fontSize: "0.55rem", lineHeight: 1 }}>complet</div>}
               </div>
             );
           })}
@@ -93,13 +94,13 @@ function ProviderCalendar({ year, month, blockedDates, onToggleSlot, onPrev, onN
             <button onClick={() => setPopup(null)} style={{ background: "none", border: "none", fontSize: "1.3rem", cursor: "pointer", color: "var(--gray-400)" }}>✕</button>
           </div>
           <p style={{ color: "var(--gray-500)", fontSize: "0.9rem", marginBottom: 16 }}>
-            Cliquez un créneau <strong>disponible</strong> pour le rendre indisponible (ou inversement). Les créneaux réservés ou en attente sont gérés automatiquement depuis l'onglet « Mes demandes ».
+            Cliquez un créneau pour l'<strong>ajouter</strong> à vos disponibilités (vert). Cliquez à nouveau pour le retirer. Les créneaux en attente ou réservés sont gérés automatiquement.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: 10 }}>
             {ALL_SLOTS.map(slot => {
               const status = slotStatus(popup, slot);
               const st = SLOT_STATUS_STYLE[status];
-              const editable = status === "disponible" || status === "indisponible";
+              const editable = status === "disponible" || status === "absent";
               return (
                 <button key={slot}
                   disabled={loading || !editable}
@@ -306,8 +307,8 @@ export default function ProviderDashboard() {
       const res = await api.post("/disponibilites/toggle", { date_off: iso, slot });
       setBlockedDates(prev => {
         const day = prev[iso] ? { ...prev[iso] } : {};
-        if (res.blocked) {
-          day[slot] = "indisponible";
+        if (res.added) {
+          day[slot] = "disponible";
         } else {
           delete day[slot];
         }

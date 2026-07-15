@@ -26,21 +26,21 @@ const getSlot = async (provider_id, date_off, slot) => {
   return rows[0] || null;
 };
 
-// Le prestataire bloque/débloque manuellement un créneau (statut indisponible)
+// Le prestataire ajoute/retire manuellement un créneau disponible
 const toggleSlot = async (provider_id, date_off, slot) => {
   const existing = await getSlot(provider_id, date_off, slot);
   if (existing) {
-    if (existing.status !== "indisponible") {
+    if (existing.status !== "disponible") {
       throw Object.assign(new Error("Ce créneau est déjà réservé ou en attente, vous ne pouvez pas le modifier."), { status: 409 });
     }
     await db.query(`DELETE FROM disponibilites WHERE id = ?`, [existing.id]);
-    return { blocked: false, date: date_off, slot };
+    return { added: false, date: date_off, slot };
   }
   await db.query(
-    `INSERT INTO disponibilites (id, provider_id, date_off, slot, status) VALUES (?, ?, ?, ?, 'indisponible')`,
+    `INSERT INTO disponibilites (id, provider_id, date_off, slot, status) VALUES (?, ?, ?, ?, 'disponible')`,
     [uuidv4(), provider_id, date_off, slot]
   );
-  return { blocked: true, date: date_off, slot };
+  return { added: true, date: date_off, slot };
 };
 
 // Marque un créneau avec un statut système (en_attente / reserve), lié à une réservation
