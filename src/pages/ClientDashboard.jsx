@@ -462,8 +462,7 @@ export default function ClientDashboard() {
                             <button
                               className="btn-primary"
                               style={{ padding: "7px 16px", fontSize: "0.88rem" }}
-                              onClick={() => navigate(`/reservation?provider=${p.id}`)}
-                              disabled={!p.available}
+                              onClick={() => navigate(`/prestataires/${p.id}`)}
                             >
                               Réserver
                             </button>
