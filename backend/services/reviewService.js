@@ -40,4 +40,11 @@ const getByProvider = async (provider_id) => {
   return reviewRepo.findByProvider(provider_id);
 };
 
-module.exports = { leave, getByProvider };
+const getMine = async (client_id) => {
+  const [rows] = await require("../config/db").query(
+    "SELECT booking_id FROM reviews WHERE client_id = ?", [client_id]
+  );
+  return rows;
+};
+
+module.exports = { getMine, leave, getByProvider };

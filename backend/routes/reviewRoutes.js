@@ -10,6 +10,7 @@ const rules = [
 ];
 
 router.post("/",              auth, rules, validate, ctrl.leave);
+router.get("/mine",           auth, ctrl.getMine);
 router.get("/provider/:id",   ctrl.getByProvider);
 
 module.exports = router;

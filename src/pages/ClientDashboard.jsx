@@ -60,7 +60,17 @@ export default function ClientDashboard() {
     setUser(u);
     setPhotoUrl(u.photo_url || null);
     Promise.all([api.get("/bookings/me"), api.get("/chat"), api.get("/site-reviews/mine")])
-      .then(([b, c, m]) => { setBookings(b); setConvs(c); if (m.hasReviewed) setSiteAvisDone(true); })
+      .then(([b, c, m]) => {
+        setBookings(b);
+        setConvs(c);
+        if (m.hasReviewed) setSiteAvisDone(true);
+        // Marquer les réservations qui ont déjà un avis
+        api.get("/reviews/mine").then(r => {
+          const done = {};
+          r.forEach(rv => { done[rv.booking_id] = true; });
+          setAvisSent(done);
+        }).catch(() => {});
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);

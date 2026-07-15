@@ -1,5 +1,12 @@
 const reviewService = require("../services/reviewService");
 
+const getMine = async (req, res, next) => {
+  try {
+    const reviews = await reviewService.getMine(req.user.id);
+    res.json(reviews);
+  } catch (err) { next(err); }
+};
+
 const leave = async (req, res, next) => {
   try {
     const review = await reviewService.leave(req.user.id, req.body);
@@ -14,4 +21,4 @@ const getByProvider = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { leave, getByProvider };
+module.exports = { getMine, leave, getByProvider };
