@@ -1,18 +1,10 @@
-const nodemailer = require("nodemailer");
+const { Resend } = require("resend");
 
-const transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: process.env.MAIL_PORT,
-  secure: false,
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendMail = async ({ to, subject, html }) => {
-  await transporter.sendMail({
-    from: `"Prestalya" <${process.env.MAIL_USER}>`,
+  await resend.emails.send({
+    from: "Prestalya <onboarding@resend.dev>",
     to,
     subject,
     html,
