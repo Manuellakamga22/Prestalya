@@ -16,7 +16,7 @@ export default function Booking() {
   const [form, setForm] = useState({ service: "", city: "", provider_id: preselectedProvider || "", date: "", slot: "", comment: "" });
   const [providers, setProviders] = useState([]);
   const [cities, setCities] = useState([]);
-  const [blockedSlots, setBlockedSlots] = useState({});
+  const [disponibilites, setDisponibilites] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -31,16 +31,14 @@ export default function Booking() {
     }).catch(() => {});
   }, []);
 
-  // Charger les créneaux bloqués quand on choisit un prestataire + une date
+  // Charger les disponibilités quand on choisit un prestataire
   useEffect(() => {
-    if (!form.provider_id || !form.date) { setBlockedSlots({}); return; }
-    const prov = providers.find(p => p.id === form.provider_id);
-    if (!prov) return;
+    if (!form.provider_id) { setDisponibilites({}); return; }
     api.get(`/disponibilites/${form.provider_id}`).then(data => {
-      setBlockedSlots(data || {});
-      setForm(f => ({ ...f, slot: "" })); // reset créneau si date/prest change
+      setDisponibilites(data || {});
+      setForm(f => ({ ...f, slot: "" }));
     }).catch(() => {});
-  }, [form.provider_id, form.date]);
+  }, [form.provider_id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -145,21 +143,27 @@ export default function Booking() {
                 </div>
                 <div className="form-group">
                   <label>Créneau horaire *</label>
-                  <select name="slot" value={form.slot} onChange={set} required>
-                    <option value="">Sélectionner un créneau</option>
-                    {ALL_SLOTS.map(s => {
-                      const isBlocked = form.date && !!blockedSlots[form.date]?.[s];
-                      return (
-                        <option key={s} value={s} disabled={isBlocked}>
-                          {s}{isBlocked ? " — Indisponible" : ""}
-                        </option>
-                      );
-                    })}
-                  </select>
-                  {form.provider_id && form.date && Object.keys(blockedSlots).length > 0 && (
-                    <p style={{ fontSize: "0.82rem", color: "var(--gray-400)", marginTop: 4 }}>
-                      Les créneaux grisés sont indisponibles pour ce prestataire ce jour-là.
-                    </p>
+                  {form.provider_id && form.date ? (() => {
+                    const slotsForDay = disponibilites[form.date] || {};
+                    const availableSlots = ALL_SLOTS.filter(s => {
+                      const st = slotsForDay[s];
+                      return !st || st === "disponible";
+                    });
+                    return availableSlots.length === 0 ? (
+                      <p style={{ color: "#DC2626", fontSize: "0.9rem", fontWeight: 600 }}>
+                        Aucun créneau disponible pour ce prestataire à cette date.
+                      </p>
+                    ) : (
+                      <select name="slot" value={form.slot} onChange={set} required>
+                        <option value="">Sélectionner un créneau</option>
+                        {availableSlots.map(s => <option key={s} value={s}>{s}</option>)}
+                      </select>
+                    );
+                  })() : (
+                    <select name="slot" value={form.slot} onChange={set} required>
+                      <option value="">Sélectionner un créneau</option>
+                      {ALL_SLOTS.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
                   )}
                 </div>
               </div>
