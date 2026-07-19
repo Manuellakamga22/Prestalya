@@ -11,8 +11,8 @@
   background: radial-gradient(ellipse 50% 70% at 50% 100%, rgba(124,58,237,0.06) 0%, transparent 70%);
   pointer-events: none;
 }
-.page-hero h1 { font-size: 2.5rem; font-weight: 900; color: var(--text); margin-bottom: 14px; letter-spacing: -0.5px; }
-.page-hero p { font-size: 1.30rem; color: var(--gray-500); max-width: 520px; margin: 0 auto; line-height: 1.75; }
+.page-hero h1 { font-size: 2rem; font-weight: 900; color: var(--text); margin-bottom: 14px; letter-spacing: -0.5px; }
+.page-hero p { font-size: 1rem; color: var(--gray-500); max-width: 520px; margin: 0 auto; line-height: 1.75; }
 
 /* ===== SERVICES PAGE ===== */
 .services-page { padding: 52px 0 96px; }
@@ -115,9 +115,9 @@
 }
 
 .profile-top-info { flex: 1; }
-.profile-top-info h1 { font-size: 1.7rem; font-weight: 900; color: var(--text); margin-bottom: 5px; letter-spacing: -0.3px; }
-.profile-service { font-size: 1.19rem; color: var(--gray-500); margin-bottom: 7px; }
-.profile-location { font-size: 1.17rem; color: var(--gray-500); margin-bottom: 9px; }
+.profile-top-info h1 { font-size: 1.45rem; font-weight: 900; color: var(--text); margin-bottom: 5px; letter-spacing: -0.3px; }
+.profile-service { font-size: 0.97rem; color: var(--gray-500); margin-bottom: 7px; }
+.profile-location { font-size: 0.95rem; color: var(--gray-500); margin-bottom: 9px; }
 
 .profile-qualities { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
 .quality-item { display: flex; align-items: center; gap: 6px; font-size: 1.37rem; color: var(--gray-700); font-weight: 500; }
@@ -127,10 +127,10 @@
 .profile-section { margin-bottom: 36px; }
 .profile-section:last-child { margin-bottom: 0; }
 .profile-section h3 {
-  font-size: 1.27rem; font-weight: 800; color: var(--text);
-  margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid var(--primary-light);
+  font-size: 1.05rem; font-weight: 800; color: var(--text);
+  margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--primary-light);
 }
-.profile-section p { font-size: 1.19rem; color: var(--gray-500); line-height: 1.8; }
+.profile-section p { font-size: 0.95rem; color: var(--gray-500); line-height: 1.8; }
 
 .skills-wrap { display: flex; flex-wrap: wrap; gap: 9px; }
 .skill-pill {
@@ -161,10 +161,10 @@
 .reviews-list { display: flex; flex-direction: column; gap: 14px; }
 .review-item { background: var(--gray-100); border-radius: 14px; padding: 18px 20px; }
 .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px; }
-.review-author { font-weight: 700; font-size: 1.19rem; }
-.review-text { font-size: 1.37rem; color: var(--gray-500); line-height: 1.75; }
+.review-author { font-weight: 700; font-size: 0.95rem; }
+.review-text { font-size: 0.92rem; color: var(--gray-500); line-height: 1.75; }
 .see-all-reviews {
-  color: var(--primary); font-size: 1.37rem; font-weight: 700;
+  color: var(--primary); font-size: 0.92rem; font-weight: 700;
   margin-top: 16px; display: inline-block; cursor: pointer;
 }
 .see-all-reviews:hover { text-decoration: underline; }
@@ -177,8 +177,8 @@
 }
 .booking-widget-rating { display: flex; align-items: center; gap: 9px; margin-bottom: 18px; }
 .booking-widget-rating .stars { font-size: 1rem; }
-.booking-widget-rating strong { font-size: 1.24rem; font-weight: 800; }
-.booking-widget-rating span { font-size: 1.36rem; color: var(--gray-500); }
+.booking-widget-rating strong { font-size: 1rem; font-weight: 800; }
+.booking-widget-rating span { font-size: 0.9rem; color: var(--gray-500); }
 .widget-sep { border: none; border-top: 1px solid var(--gray-200); margin: 18px 0; }
 .booking-widget .btn-primary { width: 100%; padding: 15px; font-size: 1.24rem; justify-content: center; }
 
@@ -318,33 +318,50 @@
   .profile-layout, .booking-layout, .become-layout,
   .about-intro-grid, .contact-layout { grid-template-columns: 1fr; }
   .profile-sidebar, .booking-summary { position: static; }
-  .become-layout { gap: 40px; padding-top: 48px; }
-  .contact-layout { gap: 40px; padding-top: 48px; }
+  .become-layout { gap: 32px; padding-top: 40px; }
+  .contact-layout { gap: 32px; padding-top: 40px; }
+  .profile-layout { gap: 18px; }
+  .booking-layout { gap: 18px; }
 }
 @media (max-width: 768px) {
   .services-grid-page { grid-template-columns: 1fr 1fr; }
-  .mission-cards { grid-template-columns: 1fr 1fr; gap: 16px; }
-  .page-hero h1 { font-size: 1.9rem; }
-  .become-hero h1 { font-size: 2rem; }
-  .about-intro h2 { font-size: 1.6rem; }
-  .contact-info h2 { font-size: 1.6rem; }
-  .services-page { padding: 36px 0 64px; }
-  .profile-top { flex-direction: column; padding: 28px; }
-  .profile-body { padding: 28px; }
-  .booking-form-card, .become-form-card, .contact-form-card { padding: 28px; }
+  .mission-cards { grid-template-columns: 1fr 1fr; gap: 14px; }
+  .page-hero h1 { font-size: 1.55rem; }
+  .page-hero p { font-size: 0.9rem; }
+  .page-hero { padding: 40px 0 32px; }
+  .become-hero h1 { font-size: 1.7rem; }
+  .about-intro h2 { font-size: 1.4rem; }
+  .contact-info h2 { font-size: 1.4rem; }
+  .services-page { padding: 28px 0 52px; }
+  .profile-top { flex-direction: column; padding: 20px; gap: 14px; }
+  .profile-body { padding: 20px; }
+  .profile-photo, .profile-avatar { width: 72px; height: 72px; }
+  .booking-form-card { padding: 20px; }
+  .become-form-card, .contact-form-card { padding: 24px; }
+  .booking-layout, .profile-page { padding-top: 24px; }
   .dispo-grid { grid-template-columns: repeat(4, 1fr); }
+  .booking-widget { padding: 20px; }
+  .become-hero { padding: 52px 0 44px; }
+  .search-section { padding: 18px 0; }
 }
 @media (max-width: 600px) {
   .search-bar { flex-wrap: wrap; border-radius: var(--radius-btn); }
-  .search-select { width: 100%; border-top: 1px solid var(--gray-200); }
+  .search-select { width: 100%; border-top: 1px solid var(--gray-200); padding: 11px 16px; }
   .search-bar .btn-primary { border-radius: var(--radius-btn); margin: 8px; width: calc(100% - 16px); }
+  .providers-list .provider-card,
+  .providers-list > div { width: 100%; }
 }
 @media (max-width: 480px) {
-  .services-grid-page { grid-template-columns: 1fr; }
+  .services-grid-page { grid-template-columns: 1fr 1fr; }
   .mission-cards { grid-template-columns: 1fr; }
   .numbers-grid { grid-template-columns: 1fr 1fr; }
-  .page-hero h1 { font-size: 1.65rem; }
-  .page-hero { padding: 44px 0 36px; }
-  .profile-top { gap: 16px; }
+  .page-hero h1 { font-size: 1.3rem; }
+  .page-hero { padding: 32px 0 24px; }
+  .profile-top { gap: 12px; }
   .dispo-grid { grid-template-columns: repeat(3, 1fr); }
+  .booking-form-card { padding: 16px; }
+  .profile-body { padding: 16px; }
+  .become-hero h1 { font-size: 1.4rem; }
+  .become-hero p { font-size: 0.88rem; }
+  .adv-item-text span { font-size: 0.88rem; }
 }

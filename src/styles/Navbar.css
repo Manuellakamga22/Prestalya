@@ -26,14 +26,14 @@
 
 .navbar-links { display: flex; align-items: center; gap: 2px; list-style: none; }
 .navbar-links a {
-  padding: 8px 14px; border-radius: 8px;
-  font-weight: 500; font-size: 1.19rem; color: var(--gray-700);
+  padding: 8px 12px; border-radius: 8px;
+  font-weight: 500; font-size: 0.93rem; color: var(--gray-700);
   transition: background 0.15s, color 0.15s;
 }
 .navbar-links a:hover { background: var(--primary-light); color: var(--primary); }
 .navbar-links a.active { background: var(--primary-light); color: var(--primary); font-weight: 700; }
 
-.navbar-cta .btn-primary { padding: 10px 22px; font-size: 1.19rem; }
+.navbar-cta .btn-primary { padding: 9px 18px; font-size: 0.9rem; }
 
 .navbar-toggle {
   display: none; flex-direction: column; gap: 5px;
@@ -54,8 +54,8 @@
 }
 .navbar-mobile.open { display: flex; }
 .navbar-mobile a {
-  padding: 12px 14px; border-radius: 10px;
-  font-weight: 500; font-size: 1.24rem; color: var(--gray-700);
+  padding: 11px 14px; border-radius: 10px;
+  font-weight: 500; font-size: 0.97rem; color: var(--gray-700);
   transition: background 0.15s, color 0.15s;
 }
 .navbar-mobile a:hover, .navbar-mobile a.active {
@@ -63,15 +63,15 @@
 }
 .navbar-mobile .btn-primary {
   margin-top: 10px; width: 100%; text-align: center;
-  padding: 14px; font-size: 1.24rem;
+  padding: 12px; font-size: 0.97rem;
 }
 
 /* ── User button ── */
 .navbar-user-btn {
   display: flex; align-items: center; gap: 8px;
   background: var(--primary-light); border: 1.5px solid var(--primary-mid);
-  border-radius: var(--radius-btn); padding: 8px 14px;
-  cursor: pointer; font-weight: 600; font-size: 1.37rem; color: var(--primary);
+  border-radius: var(--radius-btn); padding: 7px 12px;
+  cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--primary);
   transition: background 0.15s, box-shadow 0.15s;
 }
 .navbar-user-btn:hover { background: var(--white); box-shadow: var(--shadow); }
@@ -102,9 +102,9 @@
 
 .dropdown-item {
   display: flex; align-items: center; gap: 10px;
-  width: 100%; padding: 12px 18px;
+  width: 100%; padding: 11px 18px;
   background: none; border: none; cursor: pointer;
-  font-size: 1.36rem; color: var(--gray-700); font-weight: 500;
+  font-size: 0.92rem; color: var(--gray-700); font-weight: 500;
   text-decoration: none; transition: background 0.12s, color 0.12s;
   text-align: left;
 }
@@ -147,7 +147,7 @@
 /* ── Notification dropdown ── */
 .notif-dropdown {
   position: absolute; top: calc(100% + 10px); right: 0;
-  width: 360px; max-height: 480px;
+  width: min(360px, calc(100vw - 24px)); max-height: 480px;
   background: #fff; border: 1.5px solid #e5e7eb; border-radius: 16px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.12);
   display: flex; flex-direction: column;
@@ -198,12 +198,16 @@
 
 /* ── Toast ── */
 .notif-toast {
-  position: fixed; bottom: 28px; right: 28px;
+  position: fixed; bottom: 20px; right: 16px; left: 16px;
+  max-width: 360px; margin: 0 auto;
   background: #fff; border: 1.5px solid #e5e7eb; border-radius: 14px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.14);
   padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px;
-  max-width: 340px; cursor: pointer; z-index: 9999;
+  cursor: pointer; z-index: 9999;
   animation: toastIn 0.3s ease;
+}
+@media (min-width: 480px) {
+  .notif-toast { left: auto; right: 20px; margin: 0; }
 }
 .notif-toast-icon { font-size: 1.4rem; flex-shrink: 0; }
 .notif-toast-title { margin: 0 0 3px; font-weight: 800; font-size: 0.9rem; color: #111827; }
