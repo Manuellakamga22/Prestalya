@@ -109,8 +109,7 @@ export default function FAQ() {
           ))}
 
           <div style={{ background: "white", borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-sm)", padding: "32px", marginTop: 16, border: "1px solid rgba(124,58,237,0.07)" }}>
-            <div style={{ fontSize: "2rem", marginBottom: 12, textAlign: "center" }}>✨</div>
-            <h3 style={{ fontWeight: 800, fontSize: "1.2rem", color: "var(--text)", marginBottom: 8, textAlign: "center" }}>Posez votre question à notre assistant</h3>
+            <h3 style={{ fontWeight: 800, fontSize: "1.2rem", color: "var(--text)", marginBottom: 8, textAlign: "center" }}>Posez votre question</h3>
             <p style={{ color: "var(--gray-500)", marginBottom: 20, textAlign: "center" }}>Une réponse instantanée, à partir de nos informations officielles.</p>
             <form onSubmit={handleAsk} style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <input
@@ -132,7 +131,6 @@ export default function FAQ() {
           </div>
 
           <div style={{ background: "var(--primary-light)", borderRadius: "var(--radius-lg)", padding: "32px", textAlign: "center", marginTop: 24 }}>
-            <div style={{ fontSize: "2rem", marginBottom: 12 }}>💬</div>
             <h3 style={{ fontWeight: 800, fontSize: "1.2rem", color: "var(--text)", marginBottom: 8 }}>Vous n'avez pas trouvé votre réponse ?</h3>
             <p style={{ color: "var(--gray-500)", marginBottom: 20 }}>Notre équipe est disponible du lundi au vendredi de 9h à 18h.</p>
             <a href="/contact" className="btn-primary" style={{ display: "inline-flex", gap: 8, alignItems: "center" }}>Nous contacter</a>

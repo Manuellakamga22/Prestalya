@@ -196,7 +196,7 @@ export default function ProviderProfile() {
             <button onClick={toggleFav} disabled={favLoad}
               style={{ background: isFav ? "#FEE2E2" : "#F3F4F6", color: isFav ? "#DC2626" : "#6B7280",
                 border: "none", borderRadius: 10, padding: "8px 16px", fontWeight: 700, cursor: "pointer", fontSize: "0.9rem" }}>
-              {isFav ? "❤️ Sauvegardé" : "🤍 Sauvegarder"}
+              {isFav ? "Sauvegardé" : "Sauvegarder"}
             </button>
           )}
         </div>
@@ -225,7 +225,7 @@ export default function ProviderProfile() {
                     : <span className="badge-unavailable">● Indisponible</span>}
                 </div>
                 <div className="profile-service">{p.service}</div>
-                <div className="profile-location">📍 {p.city}</div>
+                <div className="profile-location">{p.city}</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.97rem" }}>
                   <span className="stars">{"★".repeat(Math.round(parseFloat(p.rating || 0)))}</span>
                   <strong>{rating}</strong>
@@ -238,14 +238,14 @@ export default function ProviderProfile() {
               {/* Annonce */}
               {p.bio && (
                 <div className="profile-section">
-                  <h3>📢 Son annonce</h3>
+                  <h3>Son annonce</h3>
                   <p style={{ whiteSpace: "pre-line", lineHeight: 1.7 }}>{p.bio}</p>
                 </div>
               )}
 
               {/* Disponibilités */}
               <div className="profile-section">
-                <h3>📅 Ses créneaux disponibles</h3>
+                <h3>Créneaux disponibles</h3>
                 <p style={{ color: "var(--gray-500)", fontSize: "0.9rem", marginBottom: 16 }}>
                   Cliquez sur un créneau violet <span style={{ background: "#EDE9FE", color: "#7C3AED", borderRadius: 4, padding: "1px 6px", fontWeight: 700 }}>✓</span> pour le sélectionner.
                 </p>
@@ -271,7 +271,6 @@ export default function ProviderProfile() {
                 </div>
                 {reviews.length === 0 ? (
                   <div style={{ textAlign: "center", padding: "32px 0", color: "var(--gray-400)" }}>
-                    <div style={{ fontSize: "2rem", marginBottom: 8 }}>⭐</div>
                     <p style={{ margin: 0 }}>Aucun avis pour l'instant.</p>
                   </div>
                 ) : (
@@ -362,7 +361,7 @@ export default function ProviderProfile() {
 
                   <button type="submit" className="btn-primary" disabled={booking || !selectedDate || !selectedSlot}
                     style={{ width: "100%", padding: "14px", justifyContent: "center", opacity: (!selectedDate||!selectedSlot) ? 0.6 : 1 }}>
-                    {booking ? "Envoi…" : !isClient ? "Se connecter pour réserver" : "📩 Envoyer la demande"}
+                    {booking ? "Envoi…" : !isClient ? "Se connecter pour réserver" : "Envoyer la demande"}
                   </button>
                   <p style={{ fontSize: "0.78rem", color: "var(--gray-400)", textAlign: "center", margin: 0 }}>
                     Le prestataire peut accepter ou refuser. Le chat s'ouvre après acceptation.

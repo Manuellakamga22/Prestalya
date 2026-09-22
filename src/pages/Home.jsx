@@ -40,7 +40,7 @@ export default function Home() {
         <div className="container">
           <div className="hero-layout">
             <div>
-              <div className="hero-badge">✨ Plateforme de confiance en France</div>
+              <div className="hero-badge">Plateforme de confiance en France</div>
               <h1>Trouvez un prestataire fiable près de chez vous</h1>
               <p className="hero-subtitle">
                 Réservez facilement des services à domicile : ménage, nettoyage, désinfection, aide informatique, babysitting et plus encore.
@@ -110,13 +110,21 @@ export default function Home() {
           </div>
           <div className="advantages-grid">
             {[
-              { icon: "✅", title: "Prestataires vérifiés", desc: "Tous nos professionnels sont contrôlés, évalués et validés avant d'accéder à la plateforme." },
-              { icon: "⚡", title: "Réservation simple", desc: "Réservez en quelques clics, sans appel téléphonique, sans paperasse inutile." },
-              { icon: "🔒", title: "Paiement sécurisé", desc: "Votre paiement est libéré uniquement après validation de votre prestation." },
-              { icon: "⭐", title: "Avis clients", desc: "Consultez les avis vérifiés pour faire le meilleur choix (bientôt disponible)." },
+              {
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L4 6v6c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V6l-8-4z"/><path d="M9 12l2 2 4-4"/></svg>,
+                title: "Prestataires vérifiés", desc: "Tous nos professionnels sont contrôlés, évalués et validés avant d'accéder à la plateforme." },
+              {
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>,
+                title: "Réservation simple", desc: "Réservez en quelques clics, sans appel téléphonique, sans paperasse inutile." },
+              {
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>,
+                title: "Paiement sécurisé", desc: "Votre paiement est libéré uniquement après validation de votre prestation." },
+              {
+                icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>,
+                title: "Avis clients", desc: "Consultez les avis vérifiés pour faire le meilleur choix." },
             ].map((a, i) => (
               <div key={i} className="advantage-card">
-                <div className="adv-icon">{a.icon}</div>
+                <div className="adv-icon" style={{ color: "var(--primary)" }}>{a.icon}</div>
                 <h3>{a.title}</h3>
                 <p>{a.desc}</p>
               </div>

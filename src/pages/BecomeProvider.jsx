@@ -7,10 +7,10 @@ import "../styles/pages.css";
 const ALL_PLATFORM_SERVICES = ALL_SERVICES.map(s => s.title).sort();
 
 const advantages = [
-  { icon: "📣", title: "Gagnez en visibilité", desc: "Votre profil est mis en avant auprès de milliers de clients dans votre ville." },
-  { icon: "📥", title: "Recevez plus de demandes", desc: "Les clients vous contactent directement selon vos disponibilités." },
-  { icon: "📅", title: "Gérez votre planning", desc: "Acceptez ou refusez les demandes selon vos disponibilités, en totale liberté." },
-  { icon: "📈", title: "Développez votre activité", desc: "Augmentez votre chiffre d'affaires en accédant à une clientèle qualifiée." },
+  { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>, title: "Gagnez en visibilité", desc: "Votre profil est mis en avant auprès de milliers de clients dans votre ville." },
+  { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 01-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 011-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 011.52 0C14.51 3.81 17 5 19 5a1 1 0 011 1z"/></svg>, title: "Recevez plus de demandes", desc: "Les clients vous contactent directement selon vos disponibilités." },
+  { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>, title: "Gérez votre planning", desc: "Acceptez ou refusez les demandes selon vos disponibilités, en totale liberté." },
+  { icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>, title: "Développez votre activité", desc: "Augmentez votre chiffre d'affaires en accédant à une clientèle qualifiée." },
 ];
 
 export default function BecomeProvider() {

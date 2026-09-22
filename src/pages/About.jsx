@@ -22,7 +22,9 @@ export default function About() {
               <p>Prestalya, c'est la confiance retrouvée dans les services à domicile.</p>
             </div>
             <div className="about-visual">
-              <span className="vis-icon">🏠</span>
+              <div className="vis-icon">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/></svg>
+              </div>
               <h3>Services à domicile pensés pour vous</h3>
               <p>Trouvez, comparez et réservez en quelques clics, partout en France.</p>
             </div>
@@ -37,17 +39,17 @@ export default function About() {
           </div>
           <div className="mission-cards">
             <div className="mission-card">
-              <div className="m-icon">🎯</div>
+              <div className="m-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
               <h3>Notre mission</h3>
               <p>Simplifier votre quotidien en vous connectant à des professionnels fiables et qualifiés, disponibles près de chez vous.</p>
             </div>
             <div className="mission-card">
-              <div className="m-icon">🌍</div>
+              <div className="m-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg></div>
               <h3>Notre vision</h3>
               <p>Devenir la référence des services à domicile en France, en offrant une expérience simple, transparente et de qualité.</p>
             </div>
             <div className="mission-card">
-              <div className="m-icon">💎</div>
+              <div className="m-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></div>
               <h3>Nos valeurs</h3>
               <p>Confiance, simplicité, qualité et proximité. Tout ce que nous faisons est guidé par le souci de bien vous servir.</p>
             </div>

@@ -52,12 +52,12 @@ export default function Contact() {
       <div className="container" style={{ marginTop: 32 }}>
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", marginBottom: 40 }}>
           {[
-            { icon: "⚡", label: "Email", delay: "< 24h", color: "#7C3AED", bg: "#EDE9FE" },
-            { icon: "💬", label: "Chat en ligne", delay: "Bientôt", color: "#059669", bg: "#D1FAE5" },
-            { icon: "📞", label: "Téléphone", delay: "Lun–Ven 9h–18h", color: "#0EA5E9", bg: "#E0F2FE" },
+            { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>, label: "Email", delay: "< 24h", color: "#7C3AED", bg: "#EDE9FE" },
+            { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>, label: "Chat en ligne", delay: "Bientôt", color: "#059669", bg: "#D1FAE5" },
+            { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.13 1 .37 1.97.72 2.9a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.93.35 1.9.59 2.9.72a2 2 0 011.72 2.02z"/></svg>, label: "Téléphone", delay: "Lun–Ven 9h–18h", color: "#0EA5E9", bg: "#E0F2FE" },
           ].map(item => (
             <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 12, background: item.bg, borderRadius: 14, padding: "14px 22px", minWidth: 200 }}>
-              <span style={{ fontSize: "1.5rem" }}>{item.icon}</span>
+              <span style={{ color: item.color }}>{item.icon}</span>
               <div>
                 <div style={{ fontWeight: 700, color: item.color, fontSize: "0.95rem" }}>{item.label}</div>
                 <div style={{ color: "#374151", fontSize: "0.85rem" }}>Réponse {item.delay}</div>
@@ -72,10 +72,10 @@ export default function Contact() {
             <p>Notre équipe répond à toutes vos questions dans les plus brefs délais.</p>
             <div className="contact-items">
               {[
-                { icon: "📧", label: "Email", val: "manuellakamga20@gmail.com" },
-                { icon: "📞", label: "Téléphone", val: "+33 6 34 66 01 03" },
-                { icon: "📍", label: "Adresse", val: "Paris, France" },
-                { icon: "🕐", label: "Disponibilité", val: "Lun–Ven, 9h–18h" },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>, label: "Email", val: "contact@prestalya.com" },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.13 1 .37 1.97.72 2.9a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.93.35 1.9.59 2.9.72a2 2 0 011.72 2.02z"/></svg>, label: "Téléphone", val: "+33 1 XX XX XX XX" },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>, label: "Adresse", val: "Paris, France" },
+                { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>, label: "Disponibilité", val: "Lun–Ven, 9h–18h" },
               ].map((item) => (
                 <div key={item.label} className="contact-item">
                   <div className="contact-item-icon">{item.icon}</div>

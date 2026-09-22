@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ProviderCard from "../components/ProviderCard";
 import ProviderCardSkeleton from "../components/ProviderCardSkeleton";
+import AIMatchWidget from "../components/AIMatchWidget";
 import { api } from "../api";
 import { services as ALL_SERVICES } from "../data";
 import SEO from "../components/SEO";
@@ -155,6 +156,9 @@ export default function Providers() {
 
       <section className="providers-page">
         <div className="container providers-content">
+          {!loading && providers.length > 0 && (
+            <AIMatchWidget providers={providers} />
+          )}
           <p className="providers-count">
             {loading ? "Chargement…" : `${filtered.length} prestataire${filtered.length !== 1 ? "s" : ""} trouvé${filtered.length !== 1 ? "s" : ""}`}
           </p>
