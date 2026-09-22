@@ -1,7 +1,7 @@
 const Groq = require("groq-sdk");
 
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
-const MODEL  = process.env.AI_MODEL || "llama-3.1-8b-instant";
+const MODEL  = process.env.AI_MODEL || "qwen/qwen3.8-27b";
 
 const PLATFORM_CONTEXT = `
 Tu es un assistant IA intelligent et polyvalent intégré à Prestalya, une marketplace française de services à domicile.
