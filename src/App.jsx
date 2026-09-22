@@ -25,7 +25,6 @@ import CompleteProfile from "./pages/CompleteProfile";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentCancel from "./pages/PaymentCancel";
 import NotFound from "./pages/NotFound";
-import AIAssistant from "./components/AIAssistant";
 import "./styles/global.css";
 
 export default function App() {
@@ -59,7 +58,6 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
-      <AIAssistant />
     </BrowserRouter>
   );
 }
